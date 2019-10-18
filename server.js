@@ -9,8 +9,3 @@ const HTTP_CODES = {
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
-
-
-
-
-TEST
