@@ -1,31 +1,35 @@
 .header {
-        
-    height:60px;
+    height:70px;
+    width: 100%;
     background-color: #1a1919;
+    margin-top: -40px;
 
     }
 
     body {
         overflow: hidden;
         color: #000;
-        font-family: 'Verdana', sans-serif;
         background-color: #fafafa;
+        font-family: Verdana, Geneva, Tahoma, sans-serif
 
     }
 
     .logo {
         
-        font-family: 'Verdana', sans-serif;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
         font-style: bold;
         font-size: 40px;
-        color: #fff;
-        padding-top: 4px;
-        padding-left: 10px;
+        color: #c7d3d2;
+        padding-top: 6px;
+        padding-left: 20px;
         
         }
 
     .heading {
         text-align: center;
+        font-size: 50px;
+        color: #1a1919;
+
     }
 
     input {
@@ -46,4 +50,7 @@
         border-radius: 4px;
         cursor: pointer;
       }
-    
+
+      button:hover {
+        background-color: #688787;
+      }
