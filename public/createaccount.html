@@ -2,31 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+    <link rel="stylesheet" type="text/css" href="main.css" />
+    <link rel="stylesheet" type="text/css" href="createuser.css" />
     <title>createaccount</title>
-</head>
-
-<body>
-
-    <h1>Create your account</h1>
-    <form>
-        Username: <input type="text"><br>
-        Email: <input type="email"><br>
-        Password: <input type="password"><br>
-        <input id="userInfo" type="submit" value="Create acconut">
-        </form>
-    <button id="back" onclick="loadLogInn()">
-    Back
-    </button>
-
-</body>
-
-<script>
-
-    function loadLogInn(){
-
-    }
-
-</script>
+</head>    
+    
+    <body>
+    
+            <header class="header">
+                <p class="logo">Webpres</p>
+                <p class="slogan">create simple presentations online</p>
+            </header>
+    
+            <main>
+                <section>
+                    <h1 class="heading">Create your account</h1>
+                    <br>
+                    <div class="form">
+                            <p>Username</p>
+                            <input type="text" id="createuser_username" placeholder="username">
+                            <p>E-mail address</p>
+                            <input type="text" id="createuser_mail" placeholder="email">
+                            <p>Password</p>
+                            <input type="password" id="createuser_password" placeholder="password">
+                            <br>
+                            <br>
+                            <button class="createUser"id="createuser_btn">Create user</button>
+                            <button style="margin-left: 20%"> Back <a href="/login"></a> </button>       
+                     </div>  
+                </section>
+            </main>
+    </body>
 
 </html>
