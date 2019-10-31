@@ -1,37 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="main.css" />
     <link rel="stylesheet" type="text/css" href="createuser.css" />
     <title>createaccount</title>
-</head>    
-    
-    <body>
-    
-            <header class="header">
-                <p class="logo">Webpres</p>
-                <p class="slogan">create simple presentations online</p>
-            </header>
-    
-            <main>
-                <section>
-                    <h1 class="heading">Create your account</h1>
-                    <br>
-                    <div class="form">
-                            <p>Username</p>
-                            <input type="text" id="createuser_username" placeholder="username">
-                            <p>E-mail address</p>
-                            <input type="text" id="createuser_mail" placeholder="email">
-                            <p>Password</p>
-                            <input type="password" id="createuser_password" placeholder="password">
-                            <br>
-                            <br>
-                            <button class="createUser"id="createuser_btn">Create user</button>
-                            <button style="margin-left: 20%"> Back <a href="/login"></a> </button>       
-                     </div>  
-                </section>
-            </main>
-    </body>
+</head>
+
+<body>
+    <header class="header">
+        <p class="logo">Webpres</p>
+        <p class="slogan">create simple presentations online</p>
+    </header>
+    <main>
+        <section>
+            <h1 class="heading">Create your account</h1>
+            <div class="form">
+                <p>Username</p>
+                <input type="text" id="inpUsername" placeholder="username">
+                <p>Password</p>
+                <input type="password" id="inpPwrd" placeholder="password">
+                <p>E-mail address</p>
+                <input type="text" id="inpEmail" placeholder="email">
+                <br>
+                <br>
+                <button class="createUser" id="createuserBtn">Create user</button>
+                <button style="margin-left: 20%"> Back <a href="/login"></a> </button>
+            </div>
+        </section>
+    </main>
+</body>
+
+<script>
+
+    let inpUserame = document.getElementById('inpUsername');
+    let inpEmail = document.getElementById('inpEmail');
+    let inpPassword = document.getElementById('inpPwrd');
+
+    let btnCreate = document.getElementById('createuserBtn');
+    let txtResult = document.getElementById('txtResult');
+
+    btnCreate.addEventListener('click', async function (evt) {
+
+        let url = "http://localhost:3000/user";
+
+        let updata = {
+            username: inpUsername.value,
+            password: inpPassword.value,
+            email: inpEmail.value
+        }
+
+        let cfg = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+            txtResult.innerHTML = data.msg;
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+
+</script>
 
 </html>
