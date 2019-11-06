@@ -1,15 +1,7 @@
-.header {
-    height:70px;
-    width: 100%;
-    background-color: #1a1919;
-    margin-top: -40px;
-
-    }
-
     body {
         overflow: hidden;
         color: #000;
-        background-color: #e6e6e6;
+        background-color: #ffffff;
         font-family: Verdana, Geneva, Tahoma, sans-serif
 
     }
@@ -18,8 +10,8 @@
         
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         font-style: bold;
-        font-size: 40px;
-        color: #c7d3d2;
+        font-size: 30px;
+        color: #59918b;
         padding-top: 6px;
         padding-left: 20px;
         
@@ -52,5 +44,15 @@
       }
 
       button:hover {
-        background-color: #688787;
+        background-color: #59918b;
+      }
+
+      .menyBtn {
+        background-color: #a0bebb;
+        font-size: 9pt;
+        color: rgb(0, 0, 0);
+        padding: 5px 5px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
       }

@@ -1,102 +1,57 @@
-.navbar {
-  overflow: hidden;
-  background-color: darkgray;
+.list {
+  margin-left: 100px;
 }
 
-.navbar a {
-  float: left;
-  font-size: 16px;
-  color: white;
+.editor {
+  margin-left: 470px;
+  margin-bottom: -5px;
+}
+
+.listTitle {
+  font-size: 50px;
+  color: #1a1919;
+}
+
+.tooltiptext{
+  font-size: 9pt;
+  color: #585858;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 150px;
+  background-color:  rgb(226, 226, 226);
+  color: rgb(5, 5, 5);
   text-align: center;
-  padding: 14px 16px;
-  margin-right: 5px;
-  text-decoration: none;
-}
-
-.dropdown {
-  float: left;
-  overflow: hidden;
-}
-
-.dropdown .dropbtn {
-  font-size: 16px;  
-  color: white;
-  padding: 14px 16px;
-  background-color: inherit;
-  font-family: inherit;
-  margin: 0;
-  border-radius: 0px;
-}
-
-.navbar a:hover, .dropdown:hover .dropbtn {
-  background-color:  #688787;
-}
-
-.dropdown-content {
-  display: none;
+  padding: 5px 0;
+  border-radius: 6px;
+ 
   position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
+  top: -10px;
+  left: 100%;
 }
 
-.dropdown-content a {
-  float: none;
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  text-align: left;
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 
-.dropdown-content a:hover {
-  background-color:  #688787
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-.slide {
-    background-color: #fff;
-    border-style: solid;
-    border-width: 2px;
-    border-color: black;
-    width: 900px;
-    height: 500px;
-    margin-top: 30px;
-    text-align: center;
-    margin-left: 10%;
-}
-
-.titleslide {
-    display: inline-block;
+.tooltip{
+  position: relative;
+  display: inline-block;
 }
 
 
-
-.slidetitle {
-    font-size: 60px;
-    width: 750px;
-    color: #688787;
-    text-align: center;
-    margin-top: 130px;
+#listInp {
+  width: 500px;
 }
 
-.slidedescription {
-    font-size: 25px;
-    width: 750px;
-    text-align: center;
-    margin-top: -20px;
-}
-
-.slidetext {
-    font-size: 12px;
-    width: 300px;
-}
-
-.deletBtn {
-    font-size: 16px;
-    margin-left: 10%;
+.deleteBtn {
+  background-color: #000000;
+  font-size: 9pt;
+  color: rgb(255, 255, 255);
+  padding: 5px 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }

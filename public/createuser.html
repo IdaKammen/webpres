@@ -10,8 +10,7 @@
 
 <body>
     <header class="header">
-        <p class="logo">Webpres</p>
-        <p class="slogan">create simple presentations online</p>
+        <p class="logo">List it</p>
     </header>
     <main>
         <section>
@@ -22,7 +21,7 @@
                 <p>Password</p>
                 <input type="password" id="inpPwrd" placeholder="password">
                 <p>E-mail address</p>
-                <input type="text" id="inpEmail" placeholder="email">
+                <input type="email" id="inpEmail" placeholder="email">
                 <br>
                 <br>
                 <button class="createUser" id="createuserBtn">Create user</button>
@@ -60,7 +59,7 @@
         try {
             var resp = await fetch(url, cfg);
             var data = await resp.json();
-            txtResult.innerHTML = data.msg;
+            //txtResult.innerHTML = data.msg;
         }
         catch (err) {
             console.log(err);

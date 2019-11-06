@@ -1,44 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="main.css" />
     <link rel="stylesheet" type="text/css" href="editmode.css" />
     <title>Editmode</title>
-</head>    
-    
-    <body>
-            <header class="header">
-                <p class="logo">Webpres</p>
-            </header>
-            <div class="navbar">
-                    
-                    <div class="dropdown">
-                      <button class="dropbtn">New slide</button>
-                      <div class="dropdown-content">
-                        <a href="#">Title slide</a>
-                        <a href="#">Img slide</a>
-                        <a href="#">List slide</a>
-                      </div>
-                    </div>
-                     <a href="#">View mode</a> 
-                     <a href="#">Save presentation</a>
-                  </div>
-    
-            <main>
-                <div class="slide">
-                    <div class="titleslide">
-                        <p class="slidetitle" contenteditable="true" >Title</p>
-                        <p class="slidedescription" contenteditable="true" >click on text to edit</p>
-                    </div>
-                </div>
-                 <button class="deletBtn">Delete slide</button>
+</head>
 
-                 <div class="imgslide">
-                        <img id="img">
-                        <p class="slidetext" contenteditable="true" >click on text to edit</img>
-                    </div>
-            </main>   
-    </body>
+<body>
+    <header class="header">
+        <p class="logo">List it</p>
+
+    </header>
+    <main>
+        <div class="list">
+            <button class="menyBtn editor" id="saveBtn">Save list</button>
+            <button class="menyBtn" id="deleteBtn">Delete list</button>
+            <br>
+            <div class="listTitle tooltip" contenteditable="true">List title
+                <span class="tooltiptext">Title your list here</span></div>
+            <br>
+            <input type="text" id="listInp" placeholder="item">
+
+            <button id="addBtn">add to list</button>
+            <br><br>
+
+            <div id="container"></div>
+
+        </div>
+    </main>
+</body>
+
+<script>
+
+    let addBtn = document.getElementById("addBtn");
+    let container = document.getElementById("container");
+    let listDiv = document.createElement("div");
+
+    addBtn.addEventListener("click", addItem);
+    
+    /*let itemList;
+    if (localStorage.getItem('itemlist') == null) {
+        itemList = new Array;;
+    } else {
+        itemList = JSON.parse(localStorage.getItem('itemlist'));
+    };*/
+
+    let itemList = new Array; 
+
+        function addItem() {
+
+            let listItem = document.createElement("li");
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.classList.add("deleteBtn");
+
+            let inpValue = document.getElementById("listInp").value;
+            listItem.innerHTML = inpValue;
+            itemList.push(inpValue);
+            localStorage.setItem("itemlist", JSON.stringify(itemList));
+
+            listDiv.appendChild(listItem);
+            listDiv.appendChild(deleteBtn);
+
+            container.appendChild(listDiv);
+
+        };
+
+</script>
 
 </html>
