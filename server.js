@@ -1,19 +1,29 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-
-
-const pg = require('pg');
-const dbURI = "postgres://nwzjyqympfxqpv:db64364662d38a5811c438757136f15e8039b264998dcf34d400f4711acad962@ec2-54-217-228-25.eu-west-1.compute.amazonaws.com:5432/dascnumjjf9evv" + "?ssl=true";
-const dbConnection = process.env.DATABASE_URL || dbURI;
-const pool = new pg.Pool({ connectionString: dbConnection });
-
-const jwt = require('jsonwebtoken')
-const secret = "frenchfriestastegood!";
-
 const app = express();
 
+let secrets;
+ try {
+     secrets = require("./secrets")
+ } catch (error) {
+     console.log("not running localy so no secrets to share");
+ };
+
+const pg = require('pg');
+const dbConnection = process.env.DATABASE_URL || secrets.env.DATABASE_URL;
+const pool = new pg.Pool({ connectionString: dbConnection });
+
+const secret = "frenchfriestastegood!";
+const jwt = require('jsonwebtoken')
+
+// start server -----------------------------------
+
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), function () {console.log('server running on port', app.get('port'));});
+
 //--------MIDDLEWARE----------
+
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
@@ -105,10 +115,3 @@ app.post('/auth', async function (req, res) {
 //-------- Endpont DELETE ------------------------
 
 
-
-// start server -----------------------------------
-
-var port = process.env.PORT || 3000;
-app.listen(port, function () {
-    console.log('Server listening on port 3000!');
-});
