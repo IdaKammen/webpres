@@ -1,67 +1,117 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const path = require('path');
+const pg = require('pg');
+const jwt = require('jsonwebtoken');
+
 const app = express();
 
-let secrets;
- try {
-     secrets = require("./secrets")
- } catch (error) {
-     console.log("not running localy so no secrets to share");
- };
 
-const pg = require('pg');
-const dbConnection = process.env.DATABASE_URL || secrets.env.DATABASE_URL;
-const pool = new pg.Pool({ connectionString: dbConnection });
+const dbURI = "postgres://nwzjyqympfxqpv:db64364662d38a5811c438757136f15e8039b264998dcf34d400f4711acad962@ec2-54-217-228-25.eu-west-1.compute.amazonaws.com:5432/dascnumjjf9evv" + "?ssl=true";
+const conString = process.env.DATABASE_URL || dbURI;
+const pool = new pg.Pool({ connectionString: conString });
 
-const secret = "frenchfriestastegood!";
-const jwt = require('jsonwebtoken')
+const secret = "glederMegtilJul!";
 
-// start server -----------------------------------
-
-app.set('port', (process.env.PORT || 3000));
-app.listen(app.get('port'), function () {console.log('server running on port', app.get('port'));});
 
 //--------MIDDLEWARE----------
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
-// ROUTING --------------------------
 
+// -------- USER endpoints ----------------------------------------------
 
+// --- endpoint for listing lists in user -------------------------------
 
-// --- GET ----------------------------------
+app.get('/user', async function (req, res) {
 
-app.get('/', async function (req, res) {
+    let sql = "SELECT * FROM lists";
+    try {
+        let result = await pool.query(sql);
+        res.status(200).json(result.rows); //send response in json
+
+    } catch (err) {
+        res.status(500).json(err); //send err in json
+
+    }
+
+});
+
+// --- endpoint for deleting a list --------------------------------------
+
+app.delete('/user', async function (req, res) {
+ 
+    let updata = req.body; // dataen som sendes fra client-siden
+
+    let sql = 'DELETE FROM lists WHERE id = $1 RETURNING *';
+    let values = [updata.listID];
 
     try {
-        res.status(200).json(result.rows); //send response
-    }
-    catch (err) {
-        res.status(500).json({ error: err }); //send error response
+        let result = await pool.query(sql, values);
+
+        if (result.rows.length > 0) {
+            res.status(200).json({ msg: "Delete OK" }); // send respons
+        } else {
+            throw "Delete failed";
+        }
+    } catch (err) {
+        res.status(500).json({ error: err }); // send error respons. 
     }
 });
 
-// --- POST ---------------------------------
+// -------- EDITOR endpoints ----------------------------------------------
 
-app.post('/', async function (req, res) {
+// --- POST endpoint for creating new list ------
+
+app.post('/editor', async function (req, res) {
+
+    let upData = req.body; // data som er sendt fra editor siden / clienten
+    let sql = 'INSERT INTO lists (id, title, list, userid) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
+    let values = [upData.title, upData.list, upData.userid];
+
     try {
+        let result = await pool.query(sql, values);
 
+        if (result.rows.length > 0) {
+            res.status(200).json({ msg: "insert OK" });
+        }
+        else {
+            throw "insert failed";
+        }
     }
     catch (err) {
-        res.status(500).json({ error: err }); //send error response
+
+        console.log(err)
+        res.status(500).json({ error: err });
     }
 });
 
-// ---- endpoint - users POST--------------------
+// --- GET endpoint for showing list ---------------------------------
+// må kun få tak i lister som tilhører den aktuelle brukeren! 
+// må kun liste ut den aktuelle listen som skal endres på. 
 
-app.post('/user', async function (req, res) {
+app.get('/editor', async function (req, res) {
+
+    let sql = 'SELECT * FROM lists where user'; // WHERE id = $1 - brukeren er burkerID?
+
+    try {
+        let result = await pool.query(sql);
+        res.status(200).json({ msg: "insert OK" });
+    }
+    catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
+
+// ---- ENDPOINTS for createuser ---------------
+// ---- POST -----------------------------------
+
+app.post('/createuser', async function (req, res) {
 
     let updata = req.body; //the data sent from the client
-
-    //hashing the password before it is stored in the DB
-    let hash = bcrypt.hashSync(updata.passwrd, 10);
 
     let sql = 'INSERT INTO users (id, username, password, email ) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
     let values = [updata.username, updata.password, updata.email];
@@ -71,6 +121,7 @@ app.post('/user', async function (req, res) {
 
         if (result.rows.length > 0) {
             res.status(200).json({ msg: "Insert OK" }); //send response
+            console.log(result);
         }
         else {
             throw "Insert failed";
@@ -81,14 +132,16 @@ app.post('/user', async function (req, res) {
         res.status(500).json({ error: err }); //send error response
     }
 });
+// når brukeren er laget må ny side lastes inn og ny GET request må gjøres på den siden. 
+
 
 // ---- endpoint - auth (login) POST--------------------
 
-app.post('/auth', async function (req, res) {
+app.post('/login', async function (req, res) {
 
     let updata = req.body;
-    let sql = 'SELECT * FROM users where email = 1$';
-    let values = [updata.email];
+    let sql = 'SELECT * FROM users where username = 1$';
+    let values = [updata.username];
 
     try {
         let result = await pool.query(sql, values)
@@ -97,7 +150,7 @@ app.post('/auth', async function (req, res) {
             res.status(400).json({ msg: "User doesn´t exist" });
         }
         else {
-            let check = bcrypt.compareSync(updata.passwrd, result.rows[0].pswhash);
+            let check = bcrypt.compareSync(updata.password, result.rows[0].pswhash);
             if (check == true) {
                 let payload = { userid: result.rows[0].id };
                 let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
@@ -112,6 +165,8 @@ app.post('/auth', async function (req, res) {
     }
 });
 
-//-------- Endpont DELETE ------------------------
 
+// start server -----------------------------------
 
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), () => console.log('server running on port', app.get('port')));
