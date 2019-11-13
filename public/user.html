@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/editmode.css" />
+    <title>Userprofile</title>
+</head>
+
+<body>
+    <header class="header">
+        <p class="logo">List it</p>
+
+    </header>
+    <main>
+        <div class="list">
+            <button class="menyBtn editor" id="createBtn">Create new list</button>
+            <button class="menyBtn" id="editProfileBtn">Edit Profile</button>
+            <button class="menyBtn" id="logoutBtn">Log out</button>
+            <br>
+            <div class="listTitle">My lists</div>
+            <br>
+            <div id="container"></div>
+        </div>
+    </main>
+</body>
+
+<script>
+
+    let url = "http://localhost:3000/user";
+
+    let createBtn = document.getElementById("createBtn").addEventListener('click', function (evt){
+        location.herf = "editor.html";
+    });
+    let editProfileBtn = document.getElementById("editProfileBtn").addEventListener('click', function (evt){
+        location.herf = "editprofileinfo.html";
+    });
+    let logoutBtn = document.getElementById("logoutBtn").addEventListener('click', function (evt){
+        location.herf = "login.html";
+    });
+
+    function loadEditor() {console.log("loadEditor");};
+    function loadEditProfile() {console.log("loadEditProfile");};
+    function logOut() {console.log("log out user - load login");};
+
+    let container = document.getElementById("container");
+
+    loadList();
+
+    async function loadList() {
+
+        try {
+            var resp = await fetch(url);
+            var data = await resp.json();
+
+            container.innerHTML = ""; // sletter gammelt container-innhold før listen listes ut på nytt.
+
+            for (let value of data) {
+                let html = `<li>${value.title}</li>`;
+                let listDiv = document.createElement("div");
+                listDiv.innerHTML = html;
+
+                let editBtn = document.createElement("button");
+                editBtn.innerHTML = "Edit";
+                editBtn.classList.add("listBtn");
+                editBtn.addEventListener('click', function (evt) {
+                    sessionStorage.setItem("listId", value.id);
+                    location.herf = "editor.html";
+                });
+
+                let delBtn = document.createElement("button");
+                delBtn.innerHTML = "Delete";
+                delBtn.classList.add("listBtn");
+                delBtn.addEventListener('click', function (evt) {
+                    deleteList(value.id);
+                });
+
+                listDiv.appendChild(editBtn);
+                listDiv.appendChild(delBtn);
+
+                container.appendChild(listDiv);
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+    // ---------------------------------------    
+    async function deleteList(id) {
+
+        let updata = { listID: id };
+        let cfg = {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            await fetch(url, cfg);
+            loadList();
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+</script>
+
+</html>

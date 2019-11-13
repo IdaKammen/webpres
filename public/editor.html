@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="main.css" />
-    <link rel="stylesheet" type="text/css" href="editmode.css" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/editmode.css" />
     <title>Editmode</title>
 </head>
 
@@ -18,11 +18,12 @@
             <button class="menyBtn editor" id="saveBtn">Save list</button>
             <button class="menyBtn" id="deleteBtn">Delete list</button>
             <br>
-            <div class="listTitle tooltip" contenteditable="true">List title
-                <span class="tooltiptext">Title your list here</span></div>
+            <div id="title" class="listTitle">List title</div>
             <br>
-            <input type="text" id="listInp" placeholder="item">
-
+            <input class="input" type="text" id="titleInp" placeholder="Title">
+            <button id="titleBtn">change title</button>
+            <br>
+            <input class="input" type="text" id="inpItem" placeholder="item">
             <button id="addBtn">add to list</button>
             <br><br>
 
@@ -34,39 +35,72 @@
 
 <script>
 
+    let url = "http://localhost:3000/editor";
+
+    let inpTitle = document.getElementById("titleInp");
+    let inpItem = document.getElementById("inpItem");
+    let saveBtn = document.getElementById("saveBtn");
+    let titleBtn = document.getElementById("titleBtn");
+
+    let titleDiv = document.getElementById("title");
+
     let addBtn = document.getElementById("addBtn");
     let container = document.getElementById("container");
     let listDiv = document.createElement("div");
 
-    addBtn.addEventListener("click", addItem);
-    
-    /*let itemList;
-    if (localStorage.getItem('itemlist') == null) {
-        itemList = new Array;;
-    } else {
-        itemList = JSON.parse(localStorage.getItem('itemlist'));
-    };*/
+    saveBtn.addEventListener('click', async function (evt) {
 
-    let itemList = new Array; 
+        let url = "http://localhost:3000/editor";
 
-        function addItem() {
+        let updata = {
+            title: titleValue,
+            list: itemList,
+            userid: 1
+        }
 
-            let listItem = document.createElement("li");
-            let deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Delete";
-            deleteBtn.classList.add("deleteBtn");
+        let cfg = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updata)
+        }
 
-            let inpValue = document.getElementById("listInp").value;
-            listItem.innerHTML = inpValue;
-            itemList.push(inpValue);
-            localStorage.setItem("itemlist", JSON.stringify(itemList));
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+            console.log(data);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
 
-            listDiv.appendChild(listItem);
-            listDiv.appendChild(deleteBtn);
+    titleBtn.addEventListener('click', function (evt) {
+        titleDiv.textContent = inpTitle.value;
+        titleValue = titleDiv.innerHTML;
+    });
+    let itemList = new Array;
 
-            container.appendChild(listDiv);
+    addBtn.addEventListener("click", function () {
 
-        };
+        let listItem = document.createElement("li");
+        let deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.classList.add("listBtn");
+
+        let inpValue = inpItem.value;
+        listItem.innerHTML = inpValue;
+
+        itemList.push(inpValue);
+        console.log(itemList);
+        localStorage.setItem("itemlist", itemList);
+
+        listDiv.appendChild(listItem);
+        listDiv.appendChild(deleteBtn);
+
+        container.appendChild(listDiv);
+    });
+
+
 
 </script>
 
