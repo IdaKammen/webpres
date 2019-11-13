@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="main.css" />
-    <link rel="stylesheet" type="text/css" href="createuser.css" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/createuser.css" />
     <title>createaccount</title>
 </head>
 
@@ -38,11 +38,11 @@
     let inpPassword = document.getElementById('inpPwrd');
 
     let btnCreate = document.getElementById('createuserBtn');
-    let txtResult = document.getElementById('txtResult');
+    
 
     btnCreate.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/user";
+        let url = "http://localhost:3000/createuser";
 
         let updata = {
             username: inpUsername.value,
@@ -59,7 +59,7 @@
         try {
             var resp = await fetch(url, cfg);
             var data = await resp.json();
-            //txtResult.innerHTML = data.msg;
+            console.log(data);
         }
         catch (err) {
             console.log(err);
