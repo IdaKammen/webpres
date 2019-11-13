@@ -3,15 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="main.css" />
-    <link rel="stylesheet" type="text/css" href="createuser.css" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/createuser.css" />
     <title>createaccount</title>
 </head>
 
 <body>
     <header class="header">
-        <p class="logo">Webpres</p>
-        <p class="slogan">create simple presentations online</p>
+        <p class="logo">List it</p>
     </header>
     <main>
         <section>
@@ -22,7 +21,7 @@
                 <p>Password</p>
                 <input type="password" id="inpPwrd" placeholder="password">
                 <p>E-mail address</p>
-                <input type="text" id="inpEmail" placeholder="email">
+                <input type="email" id="inpEmail" placeholder="email">
                 <br>
                 <br>
                 <button class="createUser" id="createuserBtn">Create user</button>
@@ -39,11 +38,11 @@
     let inpPassword = document.getElementById('inpPwrd');
 
     let btnCreate = document.getElementById('createuserBtn');
-    let txtResult = document.getElementById('txtResult');
+    
 
     btnCreate.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/user";
+        let url = "http://localhost:3000/createuser";
 
         let updata = {
             username: inpUsername.value,
@@ -60,7 +59,7 @@
         try {
             var resp = await fetch(url, cfg);
             var data = await resp.json();
-            txtResult.innerHTML = data.msg;
+            console.log(data);
         }
         catch (err) {
             console.log(err);

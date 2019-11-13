@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/login.css" />
+    <title>Home</title>
+</head>
+
+<body>
+        <section>
+            <h1 class="color">List it</h1>
+            <div class="form">
+                <p>Username</p>
+                <input type="text" id="inpUsername" placeholder="username">
+                <p>Password</p>
+                <input type="password" id="inpPwrd" placeholder="password">
+                <br>
+                <br>
+                <button class="login" id="loginBtn">log in</button>
+                <button class="createuser" id="createUserBtn"> create user <a href="/createuser.html"></a> </button>
+            </div>
+        </section>
+</body>
+
+<script>
+
+    let inpUserame = document.getElementById('inpUsername');
+    let inpPassword = document.getElementById('inpPwrd');
+
+    let loginBtn = document.getElementById('loginBtn');
+    let createUserBtn = document.getElementById('createUserBtn');
+    
+
+    loginBtn.addEventListener('click', async function (evt) {
+
+        let url = "http://localhost:3000/";
+
+        let updata = {
+            username: inpUsername.value,
+            password: inpPassword.value,
+        }
+
+        let cfg = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+            console.log(data);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+
+</script>
+
+</html>
