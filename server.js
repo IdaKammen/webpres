@@ -42,7 +42,7 @@ app.get('/user', async function (req, res) {
 // --- endpoint for deleting a list --------------------------------------
 
 app.delete('/user', async function (req, res) {
- 
+
     let updata = req.body; // dataen som sendes fra client-siden
 
     let sql = 'DELETE FROM lists WHERE id = $1 RETURNING *';
@@ -105,6 +105,27 @@ app.get('/editor', async function (req, res) {
     }
 });
 
+// --- DELETE endpoint for deleteing list item ----------------------
+
+app.delete('/editor', async function (req, res) {
+
+    let updata = req.body;
+
+    let sql = 'DELETE FROM lists RETURNING *';
+    let values = [updata.listItem];
+
+    try {
+        let result = await pool.query(sql, values);
+        if (result.rows.lenght > 0) {
+            res.staus(200).json({ msg: "Delete OK" }); // send respons
+        } else {
+            throw "Delete failed"
+        }
+    } catch (error) {
+        res.status(500).json({ error: err }); // send error response
+    }
+});
+
 
 // ---- ENDPOINTS for createuser ---------------
 // ---- POST -----------------------------------
@@ -137,7 +158,7 @@ app.post('/createuser', async function (req, res) {
 
 // ---- endpoint - auth (login) POST--------------------
 
-app.post('/login', async function (req, res) {
+app.post('/', async function (req, res) {
 
     let updata = req.body;
     let sql = 'SELECT * FROM users where username = 1$';

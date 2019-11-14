@@ -78,6 +78,7 @@
         titleDiv.textContent = inpTitle.value;
         titleValue = titleDiv.innerHTML;
     });
+
     let itemList = new Array;
 
     addBtn.addEventListener("click", function () {
@@ -86,6 +87,9 @@
         let deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Delete";
         deleteBtn.classList.add("listBtn");
+        deleteBtn.addEventListener('click', function (evt) {
+            deleteItem()
+        });
 
         let inpValue = inpItem.value;
         listItem.innerHTML = inpValue;
@@ -99,6 +103,23 @@
 
         container.appendChild(listDiv);
     });
+
+    async function deleteItem (id){
+
+        let updata = {listItem: id}
+        let cfg = {
+            methode: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            await fetch(url, cfg);
+            listItems();
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
 
 

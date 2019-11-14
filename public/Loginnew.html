@@ -25,7 +25,7 @@
                 <br>
                 <p>Do you not have a user yet? Click 'create user' to make one!</p>
                 <button class="logIn" id="logInBtn">Log In </button>
-                <button class = "createUser" id = "createUserBtn"> Create user  </button>
+                <button class="createuser" id="createUserBtn"> create user <a href="/createuser.html"></a> </button>
                 
             </div>
         </section>
@@ -43,7 +43,7 @@ let createUserBtn = document.getElementById('createUserBtn')
 
     logInBtn.addEventListener('click', async function(evt){
         
-        let url = "http://localhost:3000/user";
+        let url = "http://localhost:3000/";
     
         let upData = {
         username: inpUsername.value,
@@ -67,15 +67,8 @@ let createUserBtn = document.getElementById('createUserBtn')
     catch (err) {
         console.log(err);
     }
-}
+});
                         
-
-
-
-
-
-
-
-
 </script>
+
 </html>
