@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div {
+  background-color: lightgrey;
+  width: 300px;
+  padding: 10px;
+  margin: 20px;
+  
+    background-color: lightgrey;
+  width: 300px;
+  padding: 10px;
+  margin: 20px;
+  
+    background-color: lightgrey;
+  width: 300px;
+  padding: 10px;
+  margin: 20px;
+  
+    background-color: lightgrey;
+  width: 300px;
+  padding: 10px;
+  margin: 20px;
+  
+    background-color: lightgrey;
+  width: 300px;
+  padding: 10px;
+  margin: 20px;
+  
+    background-color: lightgrey;
+  width: 300px;
+  padding: 10px;
+  margin: 20px;
+  
+    background-color: lightgrey;
+  width: 300px;
+  padding: 10px;
+  margin: 20px;
+  
+    background-color: lightgrey;
+  width: 300px;
+  padding: 10px;
+  margin: 20px;
+}
+
+
+.btn {
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+  padding: 8px 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+</style>
+</head>
+<body>
+
+<h2>Edit profil</h2>
+
+
+
+<div>Username:</div>
+
+<div>        </div>
+
+<div>Full name:</div>
+
+<div>        </div>
+
+<div>E-mail:</div>
+
+<div>      </div>
+
+<div>Password:</div>
+
+<div>        </div>
+
+
+
+
+<button class="btn default">Save</button>
+
+<button class="btn default">Log ut</button>
+
+
+</body>
+</html>
+
