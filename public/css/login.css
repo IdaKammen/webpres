@@ -8,30 +8,11 @@
     margin-right: auto ;
     margin-top: 120px ;
     font-family: 'Verdana', sans-serif;
-<<<<<<< Updated upstream
-   
-   }
-
-
-
-
-
-   .logIn {
-    width: 50%;
-    font-size: 18px;
-    }
-
-    .createuser {
-        padding: 10px 20px;
-        margin: 8px 0px 0px 50px;
-        font-size: 12px;
-=======
    }
 
    .logIn {
     width: 50%;
     font-size: 18px;
->>>>>>> Stashed changes
     }
     .createUser{
     width: 45%;
@@ -44,11 +25,6 @@
         font-size: 50px;
         color: #59918b;
     }
-<<<<<<< Updated upstream
-
-=======
-    
->>>>>>> Stashed changes
     .listitlogo {
         position: absolute; visibility: visible; left: 480px; top: 190px; height: 100px; width: 150px; z-index: 200; 
         font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -56,9 +32,5 @@
         font-size: 70px;
         text-align: center;
        
-<<<<<<< Updated upstream
      }
      
-=======
-     }
->>>>>>> Stashed changes
