@@ -4,50 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/main.css" />
-    <link rel="stylesheet" type="text/css" href="css/createuser.css" />
-    <title>userprofile</title>
+    <link rel="stylesheet" type="text/css" href="css/login.css" />
+    <title>Home</title>
 </head>
 
 <body>
-    <header class="header">
-        <p class="logo">List it</p>
-    </header>
-    <main>
         <section>
-            <h1 class="heading">Profile information</h1>
+            <h1 class="color">List it</h1>
             <div class="form">
                 <p>Username</p>
-                <input type="text" id="inpUsername" placeholder=" New username">
+                <input type="text" id="inpUsername" placeholder="username">
                 <p>Password</p>
-                <input type="password" id="inpPwrd" placeholder=" New password">
-                <p>E-mail address</p>
-                <input type="email" id="inpEmail" placeholder="New email">
+                <input type="password" id="inpPwrd" placeholder="password">
                 <br>
                 <br>
-                <button class="createUser" id="updateBtn">Update info</button>
-                <button style="margin-left: 20%"> Back <a href="/login"></a> </button>
+                <button class="login" id="loginBtn">log in</button>
+                <button class="createuser" id="createUserBtn"> create user <a href="/createuser.html"></a> </button>
             </div>
         </section>
-    </main>
 </body>
 
 <script>
 
     let inpUserame = document.getElementById('inpUsername');
-    let inpEmail = document.getElementById('inpEmail');
     let inpPassword = document.getElementById('inpPwrd');
 
-    let updateBtn = document.getElementById('updateBtn');
+    let loginBtn = document.getElementById('loginBtn');
+    let createUserBtn = document.getElementById('createUserBtn');
     
 
-    updateBtn.addEventListener('click', async function (evt) {
+    loginBtn.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/userprofile";
+        let url = "http://localhost:3000/";
 
         let updata = {
             username: inpUsername.value,
             password: inpPassword.value,
-            email: inpEmail.value
         }
 
         let cfg = {

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <link rel="stylesheet" type="text/css" href="css/createuser.css" />
-    <title>userprofile</title>
+    <title>createaccount</title>
 </head>
 
 <body>
@@ -14,17 +14,17 @@
     </header>
     <main>
         <section>
-            <h1 class="heading">Profile information</h1>
+            <h1 class="heading">Create your account</h1>
             <div class="form">
                 <p>Username</p>
-                <input type="text" id="inpUsername" placeholder=" New username">
+                <input type="text" id="inpUsername" placeholder="username">
                 <p>Password</p>
-                <input type="password" id="inpPwrd" placeholder=" New password">
+                <input type="password" id="inpPwrd" placeholder="password">
                 <p>E-mail address</p>
-                <input type="email" id="inpEmail" placeholder="New email">
+                <input type="email" id="inpEmail" placeholder="email">
                 <br>
                 <br>
-                <button class="createUser" id="updateBtn">Update info</button>
+                <button class="createUser" id="createuserBtn">Create user</button>
                 <button style="margin-left: 20%"> Back <a href="/login"></a> </button>
             </div>
         </section>
@@ -37,12 +37,12 @@
     let inpEmail = document.getElementById('inpEmail');
     let inpPassword = document.getElementById('inpPwrd');
 
-    let updateBtn = document.getElementById('updateBtn');
+    let btnCreate = document.getElementById('createuserBtn');
     
 
-    updateBtn.addEventListener('click', async function (evt) {
+    btnCreate.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/userprofile";
+        let url = "http://localhost:3000/createuser";
 
         let updata = {
             username: inpUsername.value,

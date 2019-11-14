@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/editmode.css" />
+    <title>Editmode</title>
+</head>
+
+<body>
+    <header class="header">
+        <p class="logo">List it</p>
+
+    </header>
+    <main>
+        <div class="list">
+            <button class="menyBtn editor" id="saveBtn">Save list</button>
+            <button class="menyBtn" id="deleteBtn">Delete list</button>
+            <br>
+            <div id="title" class="listTitle">List title</div>
+            <br>
+            <input class="input" type="text" id="titleInp" placeholder="Title">
+            <button id="titleBtn">change title</button>
+            <br>
+            <input class="input" type="text" id="inpItem" placeholder="item">
+            <button id="addBtn">add to list</button>
+            <br><br>
+
+            <div id="container"></div>
+
+        </div>
+    </main>
+</body>
+
+<script>
+
+    let url = "http://localhost:3000/editor";
+
+    let inpTitle = document.getElementById("titleInp");
+    let inpItem = document.getElementById("inpItem");
+    let saveBtn = document.getElementById("saveBtn");
+    let titleBtn = document.getElementById("titleBtn");
+
+    let titleDiv = document.getElementById("title");
+
+    let addBtn = document.getElementById("addBtn");
+    let container = document.getElementById("container");
+    let listDiv = document.createElement("div");
+
+    saveBtn.addEventListener('click', async function (evt) {
+
+        let url = "http://localhost:3000/editor";
+
+        let updata = {
+            title: titleValue,
+            list: itemList,
+            userid: 1
+        }
+
+        let cfg = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+            console.log(data);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+
+    titleBtn.addEventListener('click', function (evt) {
+        titleDiv.textContent = inpTitle.value;
+        titleValue = titleDiv.innerHTML;
+    });
+    let itemList = new Array;
+
+    addBtn.addEventListener("click", function () {
+
+        let listItem = document.createElement("li");
+        let deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.classList.add("listBtn");
+
+        let inpValue = inpItem.value;
+        listItem.innerHTML = inpValue;
+
+        itemList.push(inpValue);
+        console.log(itemList);
+        localStorage.setItem("itemlist", itemList);
+
+        listDiv.appendChild(listItem);
+        listDiv.appendChild(deleteBtn);
+
+        container.appendChild(listDiv);
+    });
+
+
+
+</script>
+
+</html>
