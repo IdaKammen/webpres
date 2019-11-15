@@ -9,8 +9,7 @@
 </head>
 
 <body>
-    <h1 class = "listitlogo" >LIST 
-    </br> IT</h1>
+    <h1 class = "listitlogo" >LIST IT</h1>
     <main>
         <section>
             
@@ -39,7 +38,7 @@ let inpPwrd = document.getElementById('inpPword');
 let logInBtn = document.getElementById('logInBtn');
 let createUserBtn = document.getElementById('createUserBtn')
 
-
+    
 
     logInBtn.addEventListener('click', async function(evt){
         
@@ -68,7 +67,9 @@ let createUserBtn = document.getElementById('createUserBtn')
         console.log(err);
     }
 });
-                        
+    createUserBtn.addEventListener ('click', function (evt){
+        window.location.href = "createuser.html";
+    } );
 </script>
 
 </html>
