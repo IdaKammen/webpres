@@ -7,21 +7,19 @@
     }
 
     .logo {
-        
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-style: bold;
         font-size: 30px;
-        color: #59918b;
+        color: #487e78;
         padding-top: 6px;
         padding-left: 20px;
-        
+        margin-bottom: -0,5px; 
         }
 
     .heading {
         text-align: center;
         font-size: 50px;
         color: #1a1919;
-
     }
 
     input {

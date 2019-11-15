@@ -2,15 +2,18 @@
   margin-left: 100px;
 }
 
+.underMeny {
+  width: 102px;
+}
+
 .editor {
-  margin-left: 470px;
   margin-bottom: -5px;
 }
 
 .listTitle {
   font-size: 45px;
   color: #1a1919;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .listBtn {
@@ -21,9 +24,28 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-right: 10px; 
+  margin-right: 10px;
+  display: inline-block;
 }
 
 .input {
   width: 400px;
+}
+
+.listDiv{
+  width: 1fr;
+  overflow: hidden;
+}
+
+.checkBox {
+  margin-right: 25px;
+  width: auto;
+  display: inline-block;
+}
+
+.listItem {
+  margin-right: 20px;
+  width: 360px;
+  font-size: 16pt;
+  display: inline-block;
 }
