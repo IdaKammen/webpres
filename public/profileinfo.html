@@ -14,7 +14,7 @@
     </header>
     <main>
         <section>
-            <h1 class="heading">Profile information</h1>
+            <h1 class="heading profileheding">Profile information</h1>
             <div class="form">
                 <p id="username">Username</p>
                 <input type="text" id="inpUsername" placeholder=" New username">
@@ -25,7 +25,7 @@
                 <br>
                 <br>
                 <button class="createUser" id="updateBtn">Update info</button>
-                <button style="margin-left: 20%"> Back </button>
+                <button id="backBtn" style="margin-left: 20%"> Back </button>
             </div>
         </section>
     </main>
@@ -40,44 +40,18 @@
     let username = document.getElementById('username');
     let psw = document.getElementById('psw');
     let email = document.getElementById('email');
+    let backBtn = document.getElementById('backBtn');
 
 
     let updateBtn = document.getElementById('updateBtn');
 
-    let url = "http://localhost:3000/profileinfo";
-
-    loadUser();
-
-    async function loadUser() {
-
-        try {
-            var resp = await fetch(url);
-            var data = await resp.json();
-            
-            let userInfo = JSON.stringify(data);
-
-            console.log(userInfo);
-
-            username.innerText = "Username: " + userInfo;
-            email.innerText = "Email: " + userInfo;
-        }
-        catch (err) {
-            console.log(err);
-        }
-    };
-
-
-
-
-
-
-    updateBtn.addEventListener('click', async function (evt) {
+    updateBtn.addEventListener('click', async function (evt) { 
 
         let url = "http://localhost:3000/profileinfo";
 
         let updata = {
             username: inpUsername.value,
-            password: inpPassword.value,
+            password: inpNewPassword.value,
             email: inpEmail.value
         }
 
@@ -91,10 +65,46 @@
             var resp = await fetch(url, cfg);
             var data = await resp.json();
             console.log(data);
+            
+            username.innerText = "Username: " + data.username;
+            email.innerText = "Email: " + data.email;
+
+            inpUserame.value = "";
+            inpEmail.value = "";
+            inpNewPassword.value = "";
+
         }
         catch (err) {
             console.log(err);
         }
+
+    });
+
+    let url = "http://localhost:3000/profileinfo";
+
+    loadUser();
+
+    async function loadUser() {
+
+        try {
+            var resp = await fetch(url);
+            var data = await resp.json();
+            
+            let userInfo = JSON.stringify(data);
+            console.log(userInfo);
+
+            username.innerText = "Username: " + data[0].username;
+            email.innerText = "Email: " + data[0].email;
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+    backBtn.addEventListener('click', async function (evt) { 
+
+        // her må brukersiden lastes inn igjen, eller modalen med profileinfo må skjules og brukersiden må vises. 
+
     });
 
 </script>

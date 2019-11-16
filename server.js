@@ -182,7 +182,7 @@ app.post('/', async function (req, res) {
                 res.status(200).json({ email: result.rows[0].email, userid: result.rows[0].id, token: tok }); // send alt til clienten
             } else {
                 res.status(400).json({ msg: "wrong password" });                                // SPØRSMÅL!! hvorfor lage payload? hvor blir payload overført til client? 
-                                                                                                //id og email overfører vi jo i res ???
+                //id og email overfører vi jo i res ???
             }
         }
     }
@@ -192,31 +192,41 @@ app.post('/', async function (req, res) {
 });
 
 //--- USERPROFILE endpoints ----------------------------------------------
-// --- post -----------------------
+// --- PUT ---------------------------------------------------
 
-app.put('/editprofileinfo', async function (req, res) {
+app.put('/profileinfo', async function (req, res) {
 
-    let sql = "SELECT * FROM users WHERE id = $1 RETURNING *";
-    let values = [updata.username, updata.password, updata.email];
+    let updata = req.body; //the data sent from the client
+
+    let hash = bcrypt.hashSync(updata.password, 10);
+    // SQL query må endres til replace, finn ut hvordan!
+    let sql = 'INSERT INTO users (id, username, password, email ) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
+    let values = [updata.username, hash, updata.email];
 
     try {
         let result = await pool.query(sql, values);
-        res.status(200).json(result.rows); //send response in json
+
+        if (result.rows.length > 0) {
+            res.status(200).json({ msg: "Insert OK",  username: result.rows[0].username, email: result.rows[0].email, userid: result.rows[0].id}); //send response
+            console.log(result);
+        }
+        else {
+            throw "Insert failed";
+        }
 
     } catch (err) {
-        res.status(500).json(err); //send err in json
-
+        res.status(500).json({ error: err });
     }
-
 });
+
 
 // --- get ---------------------------
 
 app.get('/profileinfo', async function (req, res) {
 
-    let userId = 25;
+    let userId = 25; // userId må hentes inn fra session storage hvor brukerens ID er lagret fra log in eller create account
 
-    let sql = "SELECT username, email FROM users WHERE id = "+userId+"";
+    let sql = "SELECT username, email FROM users WHERE id = " + userId + "";
 
     try {
         let result = await pool.query(sql);
