@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const pg = require('pg');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const app = express();
 
@@ -17,8 +18,14 @@ const secret = "glederMegtilJul!";
 
 //--------MIDDLEWARE----------
 
+app.use(cors());
 app.use(express.static('public'));
 app.use(bodyParser.json());
+
+// start server -----------------------------------
+
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), () => console.log('server running on port', app.get('port')));
 
 
 // -------- USER endpoints ----------------------------------------------
@@ -89,16 +96,17 @@ app.post('/editor', async function (req, res) {
 });
 
 // --- GET endpoint for showing list ---------------------------------
-// må kun få tak i lister som tilhører den aktuelle brukeren! 
-// må kun liste ut den aktuelle listen som skal endres på. 
 
 app.get('/editor', async function (req, res) {
 
-    let sql = 'SELECT * FROM lists'; // WHERE id = $1 - brukeren er burkerID?
+    let listid = req.query.listid; // the data sent from the client
+
+    let sql = 'SELECT * FROM lists WHERE listid = $1';
+    let values = [listid];
 
     try {
-        let result = await pool.query(sql);
-        res.status(200).json({ msg: "insert OK" });
+        let result = await pool.query(sql, values);
+        res.status(200).json(result.rows);
     }
     catch (err) {
         res.status(500).json({ error: err });
@@ -240,7 +248,3 @@ app.get('/profileinfo', async function (req, res) {
 
 });
 
-// start server -----------------------------------
-
-app.set('port', (process.env.PORT || 3000));
-app.listen(app.get('port'), () => console.log('server running on port', app.get('port')));
