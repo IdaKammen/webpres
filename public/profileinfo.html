@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/main.css" />
-    <link rel="stylesheet" type="text/css" href="css/createuser.css" />
+    <link rel="stylesheet" type="text/css" href="css/profileinfo.css" />
     <title>userprofile</title>
 </head>
 
@@ -16,16 +16,16 @@
         <section>
             <h1 class="heading">Profile information</h1>
             <div class="form">
-                <p>Username</p>
+                <p id="username">Username</p>
                 <input type="text" id="inpUsername" placeholder=" New username">
-                <p>Password</p>
-                <input type="password" id="inpPwrd" placeholder=" New password">
-                <p>E-mail address</p>
+                <p id="email">E-mail address</p>
                 <input type="email" id="inpEmail" placeholder="New email">
+                <p id="psw">Create new password</p>
+                <input type="password" id="inpNew" placeholder=" New password">
                 <br>
                 <br>
                 <button class="createUser" id="updateBtn">Update info</button>
-                <button style="margin-left: 20%"> Back <a href="/login"></a> </button>
+                <button style="margin-left: 20%"> Back </button>
             </div>
         </section>
     </main>
@@ -35,14 +35,45 @@
 
     let inpUserame = document.getElementById('inpUsername');
     let inpEmail = document.getElementById('inpEmail');
-    let inpPassword = document.getElementById('inpPwrd');
+    let inpNewPassword = document.getElementById('inpNew');
+
+    let username = document.getElementById('username');
+    let psw = document.getElementById('psw');
+    let email = document.getElementById('email');
+
 
     let updateBtn = document.getElementById('updateBtn');
-    
+
+    let url = "http://localhost:3000/profileinfo";
+
+    loadUser();
+
+    async function loadUser() {
+
+        try {
+            var resp = await fetch(url);
+            var data = await resp.json();
+            
+            let userInfo = JSON.stringify(data);
+
+            console.log(userInfo);
+
+            username.innerText = "Username: " + userInfo;
+            email.innerText = "Email: " + userInfo;
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+
+
+
+
 
     updateBtn.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/userprofile";
+        let url = "http://localhost:3000/profileinfo";
 
         let updata = {
             username: inpUsername.value,
@@ -51,7 +82,7 @@
         }
 
         let cfg = {
-            method: "POST",
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updata)
         }
