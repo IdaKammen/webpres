@@ -144,7 +144,7 @@ app.post('/createuser', async function (req, res) {
         let idUser = result.row[0].id;
 
         if (result.rows.length > 0) {
-            res.status(200).json({ msg: "Insert OK", body: updata, result: result, userid: idUser}); //send response
+            res.status(200).json({ msg: "Insert OK", body: updata, result: result, userid: idUser }); //send response
             console.log(result);
         }
         else {
@@ -164,24 +164,25 @@ app.post('/createuser', async function (req, res) {
 app.post('/', async function (req, res) {
 
     let updata = req.body;
-    let sql = 'SELECT * FROM users where username = 1$'; // hent alt hvor brukernavnet er updata.username.
+
+    let sql = 'SELECT * FROM users WHERE username = $1';                              // hent alt hvor brukernavnet er updata.username.
     let values = [updata.username];
 
     try {
         let result = await pool.query(sql, values)
 
-        if (result.rows.length == 0) {     // om ingen bruker er registrert med dette brukernavnet vil result være null
+        if (result.rows.length == 0) {                                                   // om ingen bruker er registrert med dette brukernavnet vil result være null
             res.status(400).json({ msg: "User doesn´t exist" });
         }
-        else { // hvis det eksisterer så sjekk passordet: 
-            let check = bcrypt.compareSync(updata.password, result.rows[0].password); //Hvilken possisjon er passordet å i resultatet??
-            if (check == true) { // hvis det er samme passord som på DB
-                let payload = { userid: result.rows[0].id }; //lag en payload som du må ha med til brukersiden
-                let tok = jwt.sign(payload, secret, { expiresIn: "12h" }); // lag en token som gjør at brukeren forblir pålogget
+        else {                                                                           // hvis det eksisterer så sjekk passordet: 
+            let check = bcrypt.compareSync(updata.password, result.rows[0].password);    //Hvilken possisjon er passordet å i resultatet??
+            if (check == true) {                                                          // hvis det er samme passord som på DB
+                let payload = { userid: result.rows[0].id };                               //lag en payload som du må ha med til brukersiden
+                let tok = jwt.sign(payload, secret, { expiresIn: "12h" });                  // lag en token som gjør at brukeren forblir pålogget
                 res.status(200).json({ email: result.rows[0].email, userid: result.rows[0].id, token: tok }); // send alt til clienten
             } else {
-                res.status(400).json({ msg: "wrong password" });   // SPØRSMÅL!! hvorfor lage payload? hvor blir payload overført til client? 
-                                                                    //id og email overfører vi jo i res ???
+                res.status(400).json({ msg: "wrong password" });                                // SPØRSMÅL!! hvorfor lage payload? hvor blir payload overført til client? 
+                                                                                                //id og email overfører vi jo i res ???
             }
         }
     }
@@ -190,6 +191,44 @@ app.post('/', async function (req, res) {
     }
 });
 
+//--- USERPROFILE endpoints ----------------------------------------------
+// --- post -----------------------
+
+app.put('/editprofileinfo', async function (req, res) {
+
+    let sql = "SELECT * FROM users WHERE id = $1 RETURNING *";
+    let values = [updata.username, updata.password, updata.email];
+
+    try {
+        let result = await pool.query(sql, values);
+        res.status(200).json(result.rows); //send response in json
+
+    } catch (err) {
+        res.status(500).json(err); //send err in json
+
+    }
+
+});
+
+// --- get ---------------------------
+
+app.get('/profileinfo', async function (req, res) {
+
+    let userId = 25;
+
+    let sql = "SELECT username, email FROM users WHERE id = "+userId+"";
+
+    try {
+        let result = await pool.query(sql);
+        res.status(200).json(result.rows); //send response in json
+        console.log(result);
+
+    } catch (err) {
+        res.status(500).json(err); //send err in json
+
+    }
+
+});
 
 // start server -----------------------------------
 

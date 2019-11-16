@@ -32,7 +32,7 @@
 <script>
 
 let inpUsername = document.getElementById('inpUsername');
-let inpPwrd = document.getElementById('inpPword');
+let inpPwrd = document.getElementById('inpPwrd');
 let logInBtn = document.getElementById('logInBtn');
 
     logInBtn.addEventListener('click', async function(evt){
@@ -55,7 +55,7 @@ let logInBtn = document.getElementById('logInBtn');
             if (resp.status > 202) {
                 throw(data);
         };
-
+        console.log("user " + JSON.stringify(data) + " is logged in");
         sessionStorage.setItem("logindata", JSON.stringify(data));
     }
     catch (err) {
