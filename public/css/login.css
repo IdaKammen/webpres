@@ -11,10 +11,6 @@
    
    }
 
-
-
-
-
    .logIn {
     width: 50%;
     font-size: 18px;
@@ -33,7 +29,7 @@
     }
 
     .listitlogo {
-        position: absolute; visibility: visible; left: 480px; top: 190px; height: 100px; width: 150px; z-index: 200; 
+        position: float; visibility: visible; left: 480px; top: 190px; height: 100px; width: 150px; z-index: 200; 
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         font-style: bold;
         font-size: 70px;

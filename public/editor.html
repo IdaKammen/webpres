@@ -21,12 +21,11 @@
             <div id="title" class="listTitle">List title</div>
             <br>
             <input class="input" type="text" id="titleInp" placeholder="Title">
-            <button id="titleBtn">change title</button>
+            <button id="titleBtn" class="underMeny">change title</button>
             <br>
             <input class="input" type="text" id="inpItem" placeholder="item">
-            <button id="addBtn">add to list</button>
+            <button id="addBtn" class="underMeny">add to list</button>
             <br><br>
-
             <div id="container"></div>
 
         </div>
@@ -46,7 +45,7 @@
 
     let addBtn = document.getElementById("addBtn");
     let container = document.getElementById("container");
-    let listDiv = document.createElement("div");
+
 
     saveBtn.addEventListener('click', async function (evt) {
 
@@ -55,7 +54,7 @@
         let updata = {
             title: titleValue,
             list: itemList,
-            userid: 1
+            userid: 2
         }
 
         let cfg = {
@@ -79,34 +78,74 @@
         titleValue = titleDiv.innerHTML;
     });
 
-    let itemList = new Array;
+    let itemList;
+
+    if (localStorage.getItem("list") === null) {
+        itemList = new Array;
+        console.log("in itemlist = new array")
+    } else {
+        itemList = JSON.parse(localStorage.getItem("list"));
+        console.log(itemList);
+    };
+
+    loadList();
 
     addBtn.addEventListener("click", function () {
 
-        let listItem = document.createElement("li");
-        let deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        deleteBtn.classList.add("listBtn");
-        deleteBtn.addEventListener('click', function (evt) {
-            deleteItem()
-        });
+        console.log("in add btn");
 
         let inpValue = inpItem.value;
-        listItem.innerHTML = inpValue;
-
         itemList.push(inpValue);
+
         console.log(itemList);
-        localStorage.setItem("itemlist", itemList);
-
-        listDiv.appendChild(listItem);
-        listDiv.appendChild(deleteBtn);
-
-        container.appendChild(listDiv);
+        localStorage.setItem("list", JSON.stringify(itemList));
+        inpItem.value = " ";
+        loadList();
     });
 
-    async function deleteItem (id){
+    async function loadList() {
+        container.innerHTML = "";
 
-        let updata = {listItem: id}
+        for (let item of itemList) {
+            let listDiv = document.createElement("div");
+            listDiv.classList.add("listDiv");
+
+            let checkBox = document.createElement("input");
+            checkBox.type = "checkbox";
+            checkBox.classList.add("checkBox");
+
+            let listItem = document.createElement("span");
+            listItem.classList.add("listItem");
+            listItem.innerHTML = item;
+
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.classList.add("listBtn");
+            deleteBtn.addEventListener('click', function (evt) {
+                deleteItem()
+            });
+
+            let editBtn = document.createElement("button");
+            editBtn.textContent = "Edit";
+            editBtn.classList.add("listBtn");
+            editBtn.addEventListener('click', function (evt) {
+                editItem()
+            });
+            listDiv.appendChild(checkBox);
+            listDiv.appendChild(listItem);
+            listDiv.appendChild(deleteBtn);
+            listDiv.appendChild(editBtn);
+
+            container.appendChild(listDiv);
+        }
+    };
+
+
+    async function deleteItem(id) {
+
+        localStorage.removeItem("list");
+
+        let updata = { listItem: id }
         let cfg = {
             methode: "DELETE",
             headers: { "Content-Type": "application/json" },
