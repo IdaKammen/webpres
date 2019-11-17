@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const pg = require('pg');
 const jwt = require('jsonwebtoken');
+const cors = require('cors'); //only necessary when you are not running clients on the server
 
 const app = express();
 
@@ -12,13 +13,41 @@ const dbURI = "postgres://nwzjyqympfxqpv:db64364662d38a5811c438757136f15e8039b26
 const conString = process.env.DATABASE_URL || dbURI;
 const pool = new pg.Pool({ connectionString: conString });
 
-const secret = "glederMegtilJul!";
+const secret = "glederMegtilJul!"; //for tokens - should be stored as an environment variable
 
+let auth;
 
 //--------MIDDLEWARE----------
 
+app.use(cors());
 app.use(express.static('public'));
 app.use(bodyParser.json());
+app.use('/user', userAuth);
+app.use('/editor', userAuth);
+app.use('/profileinfo', userAuth);
+
+//function used for protecting endpoints ---------
+function userAuth(req, res, next) {
+
+    let token = req.headers['authorization'];
+
+    if (token) {
+        try {
+            logindata = jwt.verify(token, secret);
+            next();
+        } catch (err) {
+            res.status(403).json({ msg: "Not a valid token" });
+        }
+    }
+    else {
+        res.status(403).json({ msg: "No token" });
+    }
+}
+
+// start server -----------------------------------
+
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), () => console.log('server running on port', app.get('port')));
 
 
 // -------- USER endpoints ----------------------------------------------
@@ -69,7 +98,7 @@ app.post('/editor', async function (req, res) {
 
     let upData = req.body; // data som er sendt fra editor siden / clienten
     let sql = 'INSERT INTO lists (id, title, list, userid) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
-    let values = [upData.title, upData.list, upData.userid];
+    let values = [upData.title, upData.list];
 
     try {
         let result = await pool.query(sql, values);
@@ -89,16 +118,17 @@ app.post('/editor', async function (req, res) {
 });
 
 // --- GET endpoint for showing list ---------------------------------
-// må kun få tak i lister som tilhører den aktuelle brukeren! 
-// må kun liste ut den aktuelle listen som skal endres på. 
 
 app.get('/editor', async function (req, res) {
 
-    let sql = 'SELECT * FROM lists where user'; // WHERE id = $1 - brukeren er burkerID?
+    let listid = req.query.listid; // the data sent from the client
+
+    let sql = 'SELECT * FROM lists WHERE listid = $1';
+    let values = [listid];
 
     try {
-        let result = await pool.query(sql);
-        res.status(200).json({ msg: "insert OK" });
+        let result = await pool.query(sql, values);
+        res.status(200).json(result.rows);
     }
     catch (err) {
         res.status(500).json({ error: err });
@@ -134,14 +164,17 @@ app.post('/createuser', async function (req, res) {
 
     let updata = req.body; //the data sent from the client
 
+    let hash = bcrypt.hashSync(updata.password, 10);
+
     let sql = 'INSERT INTO users (id, username, password, email ) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
-    let values = [updata.username, updata.password, updata.email];
+    let values = [updata.username, hash, updata.email];
 
     try {
         let result = await pool.query(sql, values);
+        let idUser = result.row[0].id;
 
         if (result.rows.length > 0) {
-            res.status(200).json({ msg: "Insert OK" }); //send response
+            res.status(200).json({ msg: "Insert OK", body: updata, result: result, userid: idUser }); //send response
             console.log(result);
         }
         else {
@@ -153,31 +186,33 @@ app.post('/createuser', async function (req, res) {
         res.status(500).json({ error: err }); //send error response
     }
 });
-// når brukeren er laget må ny side lastes inn og ny GET request må gjøres på den siden. 
 
 
-// ---- endpoint - auth (login) POST--------------------
+
+// ---- HOME INDEX -  POST endpoint --------------------
 
 app.post('/', async function (req, res) {
 
     let updata = req.body;
-    let sql = 'SELECT * FROM users where username = 1$';
+
+    let sql = 'SELECT * FROM users WHERE username = $1';                              // hent alt hvor brukernavnet er updata.username.
     let values = [updata.username];
 
     try {
         let result = await pool.query(sql, values)
 
-        if (result.rows.length == 0) {
+        if (result.rows.length == 0) {                                                   // om ingen bruker er registrert med dette brukernavnet vil result være null
             res.status(400).json({ msg: "User doesn´t exist" });
         }
-        else {
-            let check = bcrypt.compareSync(updata.password, result.rows[0].pswhash);
-            if (check == true) {
-                let payload = { userid: result.rows[0].id };
-                let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
-                res.status(200).json({ email: result.rows[0].email, userid: result.rows[0].id, token: tok });
+        else {                                                                           // hvis det eksisterer så sjekk passordet: 
+            let check = bcrypt.compareSync(updata.password, result.rows[0].password);    //Hvilken possisjon er passordet å i resultatet??
+            if (check == true) {                                                          // hvis det er samme passord som på DB
+                let payload = { userid: result.rows[0].id };                               //lag en payload som du må ha med til brukersiden
+                let tok = jwt.sign(payload, secret, { expiresIn: "12h" });                  // lag en token som gjør at brukeren forblir pålogget
+                res.status(200).json({ email: result.rows[0].email, userid: result.rows[0].id, token: tok }); // send alt til clienten
             } else {
-                res.status(400).json({ msg: "wrong password" });
+                res.status(400).json({ msg: "wrong password" });                                // SPØRSMÅL!! hvorfor lage payload? hvor blir payload overført til client? 
+                //id og email overfører vi jo i res ???
             }
         }
     }
@@ -186,8 +221,52 @@ app.post('/', async function (req, res) {
     }
 });
 
+//--- USERPROFILE endpoints ----------------------------------------------
+// --- PUT ---------------------------------------------------
 
-// start server -----------------------------------
+app.put('/profileinfo', async function (req, res) {
 
-app.set('port', (process.env.PORT || 3000));
-app.listen(app.get('port'), () => console.log('server running on port', app.get('port')));
+    let updata = req.body; //the data sent from the client
+
+    let hash = bcrypt.hashSync(updata.password, 10);
+    // SQL query må endres til replace, finn ut hvordan!
+    let sql = 'INSERT INTO users (id, username, password, email ) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
+    let values = [updata.username, hash, updata.email];
+
+    try {
+        let result = await pool.query(sql, values);
+
+        if (result.rows.length > 0) {
+            res.status(200).json({ msg: "Insert OK", username: result.rows[0].username, email: result.rows[0].email, userid: result.rows[0].id }); //send response
+            console.log(result);
+        }
+        else {
+            throw "Insert failed";
+        }
+
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
+
+// --- get ---------------------------
+
+app.get('/profileinfo', async function (req, res) {
+
+    let userId = 25; // userId må hentes inn fra session storage hvor brukerens ID er lagret fra log in eller create account
+
+    let sql = "SELECT username, email FROM users WHERE id = " + userId + "";
+
+    try {
+        let result = await pool.query(sql);
+        res.status(200).json(result.rows); //send response in json
+        console.log(result);
+
+    } catch (err) {
+        res.status(500).json(err); //send err in json
+
+    }
+
+});
+

@@ -30,19 +30,21 @@
 
     let url = "http://localhost:3000/user";
 
-    let createBtn = document.getElementById("createBtn").addEventListener('click', function (evt){
-        location.herf = "editor.html";
-    });
-    let editProfileBtn = document.getElementById("editProfileBtn").addEventListener('click', function (evt){
-        location.herf = "editprofileinfo.html";
-    });
-    let logoutBtn = document.getElementById("logoutBtn").addEventListener('click', function (evt){
-        location.herf = "login.html";
+    let createBtn = document.getElementById("createBtn");
+    createBtn.addEventListener('click', function () {
+        window.location.herf = "editor.html";
     });
 
-    function loadEditor() {console.log("loadEditor");};
-    function loadEditProfile() {console.log("loadEditProfile");};
-    function logOut() {console.log("log out user - load login");};
+    let editProfileBtn = document.getElementById("editProfileBtn");
+    editProfileBtn.addEventListener('click', function (evt) {
+        window.location.href = "profileinfo.html";
+    });
+
+    let logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener('click', function (evt) {
+        sessionStorage.clear();
+        window.location.href = "index.html";
+    });
 
     let container = document.getElementById("container");
 

@@ -43,8 +43,6 @@
 
     let listID = sessionStorage.getItem('listId');
 
-    console.log(listID)
-
     let itemList;
 
     if (localStorage.getItem("list") === null) {
@@ -58,56 +56,42 @@
     loadList();
 
     async function loadList() {
+        container.innerHTML = "";
 
-        try {
-            var resp = await fetch(url + "?travelid=" + listID);
-            var data = await resp.json();
+        for (let item of itemList) {
+            let listDiv = document.createElement("div");
+            listDiv.classList.add("listDiv");
 
-            console.log(data);
-            console.log(data.list)
+            let checkBox = document.createElement("input");
+            checkBox.type = "checkbox";
+            checkBox.classList.add("checkBox");
 
-            //må få list array fra DB i et eget array. eller går det å si data.list? 
+            let listItem = document.createElement("span");
+            listItem.classList.add("listItem");
+            listItem.innerHTML = item;
 
-            container.innerHTML = "";
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.classList.add("listBtn");
+            deleteBtn.addEventListener('click', function (evt) {
+                deleteItem()
+            });
 
-            for (let item of itemlist) {
-                let listDiv = document.createElement("div");
-                listDiv.classList.add("listDiv");
+            let editBtn = document.createElement("button");
+            editBtn.textContent = "Edit";
+            editBtn.classList.add("listBtn");
+            editBtn.addEventListener('click', function (evt) {
+                editItem()
+            });
+            listDiv.appendChild(checkBox);
+            listDiv.appendChild(listItem);
+            listDiv.appendChild(deleteBtn);
+            listDiv.appendChild(editBtn);
 
-                let checkBox = document.createElement("input");
-                checkBox.type = "checkbox";
-                checkBox.classList.add("checkBox");
-
-                let listItem = document.createElement("span");
-                listItem.classList.add("listItem");
-                listItem.innerHTML = item;
-
-                let deleteBtn = document.createElement("button");
-                deleteBtn.textContent = "Delete";
-                deleteBtn.classList.add("listBtn");
-                deleteBtn.addEventListener('click', function (evt) {
-                    deleteItem()
-                });
-
-                let editBtn = document.createElement("button");
-                editBtn.textContent = "Edit";
-                editBtn.classList.add("listBtn");
-                editBtn.addEventListener('click', function (evt) {
-                    editItem()
-                });
-                listDiv.appendChild(checkBox);
-                listDiv.appendChild(listItem);
-                listDiv.appendChild(deleteBtn);
-                listDiv.appendChild(editBtn);
-
-                container.appendChild(listDiv);
-            }
-        }
-        catch (err) {
-            console.log(err);
+            container.appendChild(listDiv);
         }
     };
-
+    
     titleBtn.addEventListener('click', function (evt) {
         titleDiv.textContent = inpTitle.value;
         titleValue = titleDiv.innerHTML;
@@ -152,6 +136,11 @@
             console.log(err);
         }
     });
+
+
+
+
+
 
     async function deleteItem(id) {
 
