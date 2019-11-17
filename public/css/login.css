@@ -6,34 +6,34 @@
     width: 450px;
     margin-left: auto ;
     margin-right: auto ;
-    margin-top: 120px ;
+    margin-top: 50px ;
     font-family: 'Verdana', sans-serif;
-   
    }
 
    .logIn {
     width: 50%;
     font-size: 18px;
     }
-
-    .createuser {
-        padding: 10px 20px;
-        margin: 8px 0px 0px 50px;
-        font-size: 12px;
-    }
+    .createUser{
+    width: 45%;
+    
+    font-size: 18px;
+}
 
     .color {
         text-align: center;
         font-size: 50px;
         color: #59918b;
     }
-
     .listitlogo {
-        position: float; visibility: visible; left: 480px; top: 190px; height: 100px; width: 150px; z-index: 200; 
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        top: 150px;
         font-style: bold;
+        color: #59918b;
         font-size: 70px;
         text-align: center;
        
      }
      
+     .pText {
+         font-size: 12px;
+     }
