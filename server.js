@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const pg = require('pg');
 const jwt = require('jsonwebtoken');
-const cors = require('cors');
+const cors = require('cors'); //only necessary when you are not running clients on the server
 
 const app = express();
 
@@ -13,14 +13,36 @@ const dbURI = "postgres://nwzjyqympfxqpv:db64364662d38a5811c438757136f15e8039b26
 const conString = process.env.DATABASE_URL || dbURI;
 const pool = new pg.Pool({ connectionString: conString });
 
-const secret = "glederMegtilJul!";
+const secret = "glederMegtilJul!"; //for tokens - should be stored as an environment variable
 
+let auth;
 
 //--------MIDDLEWARE----------
 
 app.use(cors());
 app.use(express.static('public'));
 app.use(bodyParser.json());
+app.use('/user', userAuth);
+app.use('/editor', userAuth);
+app.use('/profileinfo', userAuth);
+
+//function used for protecting endpoints ---------
+function userAuth(req, res, next) {
+
+    let token = req.headers['authorization'];
+
+    if (token) {
+        try {
+            logindata = jwt.verify(token, secret);
+            next();
+        } catch (err) {
+            res.status(403).json({ msg: "Not a valid token" });
+        }
+    }
+    else {
+        res.status(403).json({ msg: "No token" });
+    }
+}
 
 // start server -----------------------------------
 
@@ -215,7 +237,7 @@ app.put('/profileinfo', async function (req, res) {
         let result = await pool.query(sql, values);
 
         if (result.rows.length > 0) {
-            res.status(200).json({ msg: "Insert OK",  username: result.rows[0].username, email: result.rows[0].email, userid: result.rows[0].id}); //send response
+            res.status(200).json({ msg: "Insert OK", username: result.rows[0].username, email: result.rows[0].email, userid: result.rows[0].id }); //send response
             console.log(result);
         }
         else {
