@@ -115,7 +115,7 @@
                 if (resp.status > 202) {
                     throw(data);
             };
-            
+                console.log("user " + JSON.stringify(data) + " is logged in");
                 sessionStorage.setItem("logindata", JSON.stringify(data));
         }
                  catch (err) {
