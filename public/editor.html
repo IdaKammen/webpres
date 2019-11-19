@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/main.css" />
-    <link rel="stylesheet" type="text/css" href="css/editmode.css" />
+    <link rel="stylesheet" type="text/css" href="css/edit.css" />
     <title>Editmode</title>
 </head>
 
@@ -12,13 +12,9 @@
     <p class="logo">List it</p>
 
     <div class="list">
-        <button class="menyBtn editor" id="saveBtn">Save list</button>
-        <button class="menyBtn" id="deleteBtn">Delete list</button>
+        <button class="menyBtn" id="backBtn">Back</button>
         <br>
-        <div id="title" class="listTitle">List title</div>
-        <br>
-        <input class="input" type="text" id="titleInp" placeholder="Title">
-        <button id="titleBtn" class="underMeny">change title</button>
+        <div id="title" class="listTitle"></div>
         <br>
         <input class="input" type="text" id="inpItem" placeholder="item">
         <button id="addBtn" class="underMeny">add to list</button>
@@ -35,42 +31,53 @@
     let inpItem = document.getElementById("inpItem");
     let saveBtn = document.getElementById("saveBtn");
     let titleBtn = document.getElementById("titleBtn");
+    let backBtn = document.getElementById("backBtn");
+    let title = document.getElementById("title");
 
-    let titleDiv = document.getElementById("title");
+    let listID = sessionStorage.getItem('listId');
+    let listTitle = sessionStorage.getItem('listTitle');
+
+    // setter title fra storage til list title. 
+    title.innerText = listTitle;
+
+    backBtn.addEventListener('click', function (evt) {
+        window.location.href = "user.html";
+    });
+
 
     let addBtn = document.getElementById("addBtn");
     let container = document.getElementById("container");
 
-    let listID = sessionStorage.getItem('listId');
-
-    console.log(listID)
-
-    let itemList;
-
-    if (localStorage.getItem("list") === null) {
-        itemList = new Array;
-        console.log("in itemlist = new array")
-    } else {
-        itemList = JSON.parse(localStorage.getItem("list"));
-        console.log(itemList);
-    };
+    console.log("dette er list ID " + listID);
+    console.log("dette er list title: " + listTitle);
 
     loadList();
 
     async function loadList() {
 
         try {
-            var resp = await fetch(url + "?travelid=" + listID);
+
+            var auth = JSON.parse(sessionStorage.getItem("auth"));
+            let token = auth.token;
+
+            let cfg = {
+                method: "GET",
+                headers: { "authorization": token }
+            };
+
+            var resp = await fetch(url + "?listid=" + listID, cfg);
             var data = await resp.json();
 
-            console.log(data);
-            console.log(data.list)
-
-            //må få list array fra DB i et eget array. eller går det å si data.list? 
+            if (resp.status > 202) {
+                throw (data);
+            };
 
             container.innerHTML = "";
 
-            for (let item of itemlist) {
+            console.log(data);
+
+            for (let value of data) {
+
                 let listDiv = document.createElement("div");
                 listDiv.classList.add("listDiv");
 
@@ -80,21 +87,23 @@
 
                 let listItem = document.createElement("span");
                 listItem.classList.add("listItem");
-                listItem.innerHTML = item;
+                listItem.innerHTML = value.item;
 
                 let deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Delete";
                 deleteBtn.classList.add("listBtn");
                 deleteBtn.addEventListener('click', function (evt) {
-                    deleteItem()
+                    deleteItem(value.id);
+                    console.log("inni eventlistener i deleteBtn " + value.id);
                 });
 
                 let editBtn = document.createElement("button");
                 editBtn.textContent = "Edit";
                 editBtn.classList.add("listBtn");
                 editBtn.addEventListener('click', function (evt) {
-                    editItem()
+                    //editItem() må kunne endre på et item i arrayet
                 });
+
                 listDiv.appendChild(checkBox);
                 listDiv.appendChild(listItem);
                 listDiv.appendChild(deleteBtn);
@@ -108,70 +117,78 @@
         }
     };
 
-    titleBtn.addEventListener('click', function (evt) {
-        titleDiv.textContent = inpTitle.value;
-        titleValue = titleDiv.innerHTML;
-    });
 
+    // Hver gang en list item legges til/lages så legges den opp i tabellen på DB.! Da trenger man ikke Save btn?
 
-    addBtn.addEventListener("click", function () {
-
-        console.log("in add btn");
-
-        let inpValue = inpItem.value;
-        itemList.push(inpValue);
-
-        console.log(itemList);
-        localStorage.setItem("list", JSON.stringify(itemList));
-        inpItem.value = " ";
-        loadList();
-    });
-
-    saveBtn.addEventListener('click', async function (evt) {
+    addBtn.addEventListener('click', async function (evt) {
 
         let url = "http://localhost:3000/editor";
 
+        let auth = JSON.parse(sessionStorage.getItem("auth"));
+        let token = auth.token;
+
+        let listItem = inpItem.value;
+
         let updata = {
-            title: titleValue,
-            list: itemList,
-            userid: 2
+            item: listItem,
+            listid: listID,
+            userid: auth.userid
         }
 
         let cfg = {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(updata)
         }
 
         try {
             var resp = await fetch(url, cfg);
             var data = await resp.json();
-            console.log(data);
+
+            if (resp.status > 202) {
+                throw (data);
+            };
         }
         catch (err) {
             console.log(err);
         }
+        loadList();
     });
 
     async function deleteItem(id) {
 
-        localStorage.removeItem("list");
+        let updata = { itemID: id };
 
-        let updata = { listItem: id }
+        let auth = JSON.parse(sessionStorage.getItem("auth"));
+        let token = auth.token;
+
+        console.log("updata inne i delete Item " + updata);
+
         let cfg = {
-            methode: "DELETE",
-            headers: { "Content-Type": "application/json" },
+            method: "DELETE",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(updata)
         }
 
         try {
-            await fetch(url, cfg);
-            listItems();
-        } catch (err) {
+            let resp = await fetch(url, cfg);
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            loadList();
+        }
+        catch (err) {
             console.log(err);
         }
-    };
-
+    }
 
 
 </script>
