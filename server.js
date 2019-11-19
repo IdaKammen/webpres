@@ -264,14 +264,17 @@ app.post('/', async function (req, res) {
 app.put('/profileinfo', async function (req, res) {
 
     let updata = req.body; //the data sent from the client
+    console.log(updata);
 
     let hash = bcrypt.hashSync(updata.password, 10);
-    // SQL query må endres til replace, finn ut hvordan!
-    let sql = 'INSERT INTO users (id, username, password, email ) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
-    let values = [updata.username, hash, updata.email];
+    
+    let sql = 'UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4 RETURNING *';
+    let values = [updata.username, updata.email, hash, auth.userid];
 
     try {
         let result = await pool.query(sql, values);
+
+        console.log(result);
 
         if (result.rows.length > 0) {
             res.status(200).json({ msg: "Insert OK", username: result.rows[0].username, email: result.rows[0].email, userid: result.rows[0].id }); //send response
@@ -291,13 +294,14 @@ app.put('/profileinfo', async function (req, res) {
 
 app.get('/profileinfo', async function (req, res) {
 
-
-    let sql = "SELECT username, email FROM users WHERE userid = $1";
+    let sql = "SELECT username, email FROM users WHERE id = $1";
     let values = [auth.userid];
 
     try {
         let result = await pool.query(sql, values);
         res.status(200).json(result.rows);
+
+        console.log(result.rows);
 
     } catch (err) {
         res.status(500).json(err);
