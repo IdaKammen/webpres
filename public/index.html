@@ -3,12 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <link rel="stylesheet" type="text/css" href="css/login.css" />
+=======
+    <link rel = "stylesheet" type = "text/css" href = "css/main.css" />
+    <link rel = "stylesheet" type = "text/css" href = "css/login.css" />
+    <link rel = "stylesheet" type = "text/css" href = "css/createuser.css"/>
+>>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
     <title>Log In</title>
 </head>
 
 <body>
+<<<<<<< HEAD
     <h1 class="listitlogo">LIST IT</h1>
     <main>
         <section>
@@ -72,3 +79,121 @@
 </script>
 
 </html>
+=======
+        <h1 class = "listitlogo" >List it</h1>
+        <main>
+            <section>
+                
+                
+                <div class="form" id = "myForm">
+                    <h2 style="text-align:center";>Log in</h2>
+                    <p>Username</p>
+                    <input type="text" id="inpUsername" placeholder="Enter Username">
+                    <p>Password</p>
+                    <input type="password" id="inpPwrd" placeholder="Enter Password">  
+                    <br>
+                    <br>
+                    <p class = "pText">Do you not have a user yet? Click 'create user' to make one!</p>
+                    <button class="logIn" id="logInBtn">Log In </button>
+                    <button class="createuser" id="createUserModalBtn"> create user</button>
+                    
+                </div>
+            </section>
+        </main>
+    
+    
+    <div id="myModal" class="modal">
+    
+        
+        <div class="modal-content">
+          
+          <div class="form" id = "myForm2">
+                <span class="close">&times;</span>
+                      <h2 style="text-align:center;">Create user</h2>
+                      <p style>Username</p>
+                      <input type="text" id="inpUsername" placeholder = "Enter Username">
+                      <p>Password</p>
+                      <input  type="password" id="inpPwrd" placeholder = "Enter Password"> 
+                      <p>E-mail</p> 
+                      <input type="email" id="inpEmail" placeholder= "Enter E-mail">
+          </br>
+          </br>
+                      <button class="createUser" id="createUserBtn">Create user </button>
+                      
+                      
+                  </div>
+        </div>
+      
+      </div>
+      
+    
+    
+    </body>
+    
+    <script>
+    
+        let inpUsername = document.getElementById('inpUsername');
+        let inpPwrd = document.getElementById('inpPword');
+        let modal = document.getElementById("myModal");
+    
+    
+        let logInBtn = document.getElementById('logInBtn');
+        let createUserBtn = document.getElementById('createUserBtn');
+        let modalBtn = document.getElementById("createUserModalBtn");
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    // Få X til å lukke modal skal dukke opp 
+        let span = document.getElementsByClassName("close")[0];
+    
+    // Når knappen "create user" trykkes på åpner modal 
+        modalBtn.onclick = function() {
+            modal.style.display = "block";
+    }
+    
+    // Når man trykker på X-knappen går modal vekk og vi er tilbake på login
+        span.onclick = function() {
+            modal.style.display = "none";
+    }
+    
+    
+    
+        logInBtn.addEventListener('click', async function(evt){
+            
+            let url = "http://localhost:3000/";
+        
+            let upData = {
+                username: inpUsername.value,
+                password: inpPwrd.value
+    
+        }
+            let cfg = {
+                 method: "POST",
+                 headers: {"Content-type":"application/json"},
+                 body: JSON.stringify(upData)
+        }
+                try {
+                    let resp = await fetch(url, cfg);
+                    let data = await resp.json();
+                if (resp.status > 202) {
+                    throw(data);
+            };
+                console.log("user " + JSON.stringify(data) + " is logged in");
+                sessionStorage.setItem("logindata", JSON.stringify(data));
+        }
+                 catch (err) {
+                        console.log(err);
+        }
+    });
+        
+    </script>
+    
+    </html>
+>>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
