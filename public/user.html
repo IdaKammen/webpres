@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/main.css" />
-    <link rel="stylesheet" type="text/css" href="css/editmode.css" />
+    <link rel="stylesheet" type="text/css" href="css/user.css" />
     <title>Userprofile</title>
 </head>
 
@@ -15,11 +15,16 @@
     </header>
     <main>
         <div class="list">
-            <button class="menyBtn editor" id="createBtn">Create new list</button>
             <button class="menyBtn" id="editProfileBtn">Edit Profile</button>
             <button class="menyBtn" id="logoutBtn">Log out</button>
             <br>
-            <div class="listTitle">My lists</div>
+
+            <div class="hovedDiv"></div><span class="title" id="title">My lists </span>
+            <div class="username" id="username"></div>
+            <br>
+            <input class="input" type="text" id="titleInput" placeholder="New list title">
+            <button class="menyBtn" id="createBtn">Create new list</button>
+            <br>
             <br>
             <div id="container"></div>
         </div>
@@ -28,16 +33,15 @@
 
 <script>
 
-    let url = "http://localhost:3000/user";
+
 
     let createBtn = document.getElementById("createBtn");
-    createBtn.addEventListener('click', function () {
-        window.location.herf = "editor.html";
-    });
+    let titleInp = document.getElementById("titleInput");
 
     let editProfileBtn = document.getElementById("editProfileBtn");
     editProfileBtn.addEventListener('click', function (evt) {
-        window.location.href = "profileinfo.html";
+        window.location.href = "profileinfo.html"; 
+        // må få opp modal, TOM jobber med det
     });
 
     let logoutBtn = document.getElementById("logoutBtn");
@@ -48,27 +52,91 @@
 
     let container = document.getElementById("container");
 
+    let url = "http://localhost:3000/user";
+
+    let userData = JSON.parse(sessionStorage.getItem("auth"));
+    let username = document.getElementById("username");
+    username.innerHTML = "Logged in as: " + userData.username;
+
+    createBtn.addEventListener('click', async function(evt)  {
+
+        // MÅ SJEKKE OM TITEL ER SKREVET FØRST! HVIS IKKE SÅ MÅ DET IKKE SENDES TIL DB
+        
+        let url = "http://localhost:3000/user";
+
+        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter id fra sessionStorage for å sende det med
+        let token = auth.token;
+
+        let updata = {
+            title: titleInp.value,
+            userid: auth.userid
+        }
+
+        let cfg = {
+            method: "POST",
+            headers: {
+                "authorization": token,
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw(data);
+            };
+
+            loadList();
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });  
+
     loadList();
 
     async function loadList() {
 
         try {
-            var resp = await fetch(url);
+
+            let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+            let token = auth.token;
+
+            let cfg = {
+                method: "GET",
+                headers: { "authorization": token }   // sender med token i header
+            };
+
+            var resp = await fetch(url, cfg);
             var data = await resp.json();
+            console.log(data);
+
+            if (resp.status > 202) {       // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten fåt ikke dataene.
+                throw (data);
+            }
 
             container.innerHTML = ""; // sletter gammelt container-innhold før listen listes ut på nytt.
 
             for (let value of data) {
-                let html = `<li>${value.title}</li>`;
                 let listDiv = document.createElement("div");
-                listDiv.innerHTML = html;
+                listDiv.classList.add("listDiv");
+
+                let listTitle = document.createElement("span");
+                listTitle.classList.add("listItem");
+
+                let html = `<li>${value.title}</li>`;
+                listTitle.innerHTML = html;
 
                 let editBtn = document.createElement("button");
                 editBtn.innerHTML = "Edit";
                 editBtn.classList.add("listBtn");
                 editBtn.addEventListener('click', function (evt) {
                     sessionStorage.setItem("listId", value.id);
-                    location.herf = "editor.html";
+                    sessionStorage.setItem("listTitle", value.title); // legger med list ID
+                    window.location.href = "editor.html";
                 });
 
                 let delBtn = document.createElement("button");
@@ -78,11 +146,13 @@
                     deleteList(value.id);
                 });
 
+                listDiv.appendChild(listTitle);
                 listDiv.appendChild(editBtn);
                 listDiv.appendChild(delBtn);
 
                 container.appendChild(listDiv);
             }
+            
         }
         catch (err) {
             console.log(err);
@@ -93,14 +163,25 @@
     async function deleteList(id) {
 
         let updata = { listID: id };
+
+        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let token = auth.token;
+
         let cfg = {
             method: "DELETE",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(updata)
         }
 
         try {
-            await fetch(url, cfg);
+            let resp = await fetch(url, cfg);
+            if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
+                throw (data);
+            };
+
             loadList();
         }
         catch (err) {
