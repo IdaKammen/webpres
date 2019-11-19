@@ -41,11 +41,53 @@
     let psw = document.getElementById('psw');
     let email = document.getElementById('email');
     let backBtn = document.getElementById('backBtn');
-
-
     let updateBtn = document.getElementById('updateBtn');
 
-    updateBtn.addEventListener('click', async function (evt) { 
+    let url = "http://localhost:3000/profileinfo";
+
+    loadUser();
+
+    async function loadUser() {
+
+        try {
+            let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+            let token = auth.token;
+
+            console.log(auth.userid);
+
+            let cfg = {
+                method: "GET",
+                headers: { "authorization": token }   // sender med token i header
+            };
+
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            console.log(data);
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            let userInfo = JSON.stringify(data, cfg);
+            console.log(userInfo);
+
+            username.innerText = "Username: " + data[0].username;
+            email.innerText = "Email: " + data[0].email;
+        }
+
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+    backBtn.addEventListener('click', async function (evt) {
+
+        // her må brukersiden lastes inn igjen, eller modalen med profileinfo må skjules og brukersiden må vises. 
+
+    });
+
+    updateBtn.addEventListener('click', async function (evt) {
 
         let url = "http://localhost:3000/profileinfo";
 
@@ -60,18 +102,22 @@
 
         let cfg = {
             method: "PUT",
-            headers: { 
-                "authorization": token, 
-                "Content-Type": "application/json" },
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(updata)
         }
 
         try {
             var resp = await fetch(url, cfg);
             var data = await resp.json();
-            
-            username.innerText = "Username: " + data.username;
-            email.innerText = "Email: " + data.email;
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            loadUser();
 
             inpUserame.value = "";
             inpEmail.value = "";
@@ -84,40 +130,7 @@
 
     });
 
-    let url = "http://localhost:3000/profileinfo";
 
-    loadUser();
-
-    async function loadUser() {
-
-        try {
-            let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
-            let token = auth.token;
-
-            let cfg = {
-                method: "GET",
-                headers: { "authorization": token }   // sender med token i header
-            };
-
-            var resp = await fetch(url);
-            var data = await resp.json();
-            
-            let userInfo = JSON.stringify(data, cfg);
-            console.log(userInfo);
-
-            username.innerText = "Username: " + data[0].username;
-            email.innerText = "Email: " + data[0].email;
-        }
-        catch (err) {
-            console.log(err);
-        }
-    };
-
-    backBtn.addEventListener('click', async function (evt) { 
-
-        // her må brukersiden lastes inn igjen, eller modalen med profileinfo må skjules og brukersiden må vises. 
-
-    });
 
 </script>
 
