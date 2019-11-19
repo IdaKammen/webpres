@@ -29,7 +29,7 @@ app.use('/profileinfo', userAuth);
 //function used for protecting endpoints ---------
 function userAuth(req, res, next) {
 
-   
+
     let token = req.headers['authorization'];
 
     if (token) {
@@ -75,9 +75,10 @@ app.post('/user', async function (req, res) {
         }
     } catch (err) {
         console.log(err)
-        res.status(500).json({error: err});
+        res.status(500).json({ error: err });
     }
 });
+
 
 // --- endpoint for listing lists in user -------------------------------
 
@@ -88,10 +89,10 @@ app.get('/user', async function (req, res) {
 
     try {
         let result = await pool.query(sql, values);
-        res.status(200).json(result.rows); 
+        res.status(200).json(result.rows);
 
     } catch (err) {
-        res.status(500).json(err); 
+        res.status(500).json(err);
     }
 
 });
@@ -110,11 +111,11 @@ app.delete('/user', async function (req, res) { // delete list / delete travel
 
         if (result.rows.length > 0) {
             res.status(200).json({ msg: "Delete OK" });
-        } 
+        }
         else {
             throw "Delete failed";
         }
-    } 
+    }
     catch (err) {
         res.status(500).json({ error: err });
     }
@@ -122,28 +123,28 @@ app.delete('/user', async function (req, res) { // delete list / delete travel
 
 // -------- EDITOR endpoints ----------------------------------------------
 
-// --- POST endpoint for creating new list ------
-// DETTE ER FOR TITEL TIL LISTS TABELLEN I DB
+// --- POST endpoint for creating new list item ------
 
 app.post('/editor', async function (req, res) {
 
-    let upData = req.body; // data som er sendt fra editor siden / clienten
-    let sql = 'INSERT INTO lists (id, title, userid) VALUES(DEFAULT, $1, $2) RETURNING *';
-    let values = [upData.title];
+    let updata = req.body; // data som er sendt fra editor siden / clienten
+    console.log(updata.item);
+
+    let sql = 'INSERT INTO items (id, item, listid) VALUES(DEFAULT, $1, $2) RETURNING *';
+    let values = [updata.item, updata.listid];
 
     try {
         let result = await pool.query(sql, values);
 
         if (result.rows.length > 0) {
             res.status(200).json({ msg: "insert OK" });
+            console.log("inser OK");
         }
         else {
             throw "insert failed";
         }
     }
     catch (err) {
-
-        console.log(err)
         res.status(500).json({ error: err });
     }
 });
@@ -152,16 +153,15 @@ app.post('/editor', async function (req, res) {
 
 app.get('/editor', async function (req, res) {
 
-    let listID = req.query.id; // the data sent from the client
+    let listID = req.query.listid; // the data sent from the client
     console.log(listID);
 
-    let sql = 'SELECT * FROM lists WHERE id = $1';
+    let sql = 'SELECT * FROM items WHERE listid = $1';
     let values = [listID];
 
     try {
         let result = await pool.query(sql, values);
         res.status(200).json(result.rows);
-        console.log(result.rows[0].id);
     }
     catch (err) {
         res.status(500).json({ error: err });
@@ -172,20 +172,25 @@ app.get('/editor', async function (req, res) {
 
 app.delete('/editor', async function (req, res) {
 
-    let updata = req.body;
+    console.log("inn delete endpoint");
 
-    let sql = 'DELETE FROM lists RETURNING *';
-    let values = [updata.listItem];
+    let updata = req.body; //the data sent from the client
+
+    let sql = 'DELETE FROM items WHERE id = $1 RETURNING *';
+    let values = [updata.itemID];
 
     try {
         let result = await pool.query(sql, values);
-        if (result.rows.lenght > 0) {
-            res.staus(200).json({ msg: "Delete OK" }); 
-        } else {
-            throw "Delete failed"
+
+        if (result.rows.length > 0) {
+            res.status(200).json({ msg: "Delete OK" }); //send response
         }
-    } catch (error) {
-        res.status(500).json({ error: err });
+        else {
+            throw "Delete failed";
+        }
+    }
+    catch (err) {
+        res.status(500).json({ error: err }); //send error response
     }
 });
 
@@ -216,7 +221,7 @@ app.post('/createuser', async function (req, res) {
 
     }
     catch (err) {
-        res.status(500).json({ error: err }); 
+        res.status(500).json({ error: err });
     }
 });
 
@@ -292,7 +297,7 @@ app.get('/profileinfo', async function (req, res) {
 
     try {
         let result = await pool.query(sql, values);
-        res.status(200).json(result.rows); 
+        res.status(200).json(result.rows);
 
     } catch (err) {
         res.status(500).json(err);
