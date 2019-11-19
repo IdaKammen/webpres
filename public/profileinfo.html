@@ -49,6 +49,9 @@
 
         let url = "http://localhost:3000/profileinfo";
 
+        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let token = auth.token;
+
         let updata = {
             username: inpUsername.value,
             password: inpNewPassword.value,
@@ -57,14 +60,15 @@
 
         let cfg = {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "authorization": token, 
+                "Content-Type": "application/json" },
             body: JSON.stringify(updata)
         }
 
         try {
             var resp = await fetch(url, cfg);
             var data = await resp.json();
-            console.log(data);
             
             username.innerText = "Username: " + data.username;
             email.innerText = "Email: " + data.email;
@@ -87,10 +91,18 @@
     async function loadUser() {
 
         try {
+            let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+            let token = auth.token;
+
+            let cfg = {
+                method: "GET",
+                headers: { "authorization": token }   // sender med token i header
+            };
+
             var resp = await fetch(url);
             var data = await resp.json();
             
-            let userInfo = JSON.stringify(data);
+            let userInfo = JSON.stringify(data, cfg);
             console.log(userInfo);
 
             username.innerText = "Username: " + data[0].username;

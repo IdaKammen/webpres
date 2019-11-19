@@ -2,10 +2,6 @@
   margin-left: 100px;
 }
 
-.underMeny {
-  width: 102px;
-}
-
 .editor {
   margin-bottom: -5px;
 }
@@ -13,7 +9,7 @@
 .listTitle {
   font-size: 45px;
   color: #1a1919;
-  margin-bottom: 10px;
+  margin-top: 25px;
 }
 
 .listBtn {
@@ -30,6 +26,7 @@
 
 .input {
   width: 400px;
+  height: 30px;
 }
 
 .listDiv{
@@ -48,4 +45,9 @@
   width: 360px;
   font-size: 16pt;
   display: inline-block;
+}
+
+.underMeny {
+  width: 102px;
+  margin-bottom: 5px;
 }

@@ -2,24 +2,20 @@
     background-color: #ededed;
     border-radius: 5px;
     background-color: #f2f2f2;
-    padding: 20px;
-    width: 450px;
-    margin-left: auto ;
-    margin-right: auto ;
-    margin-top: 120px ;
-    font-family: 'Verdana', sans-serif;
-   
+    padding: 15px;
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
    }
 
    .logIn {
     width: 50%;
-    font-size: 18px;
+    font-size: 16pt;
     }
-
-    .createuser {
-        padding: 10px 20px;
-        margin: 8px 0px 0px 50px;
-        font-size: 12px;
+    .createuser{
+    width: 125px;
+    font-size: 12pt;
+    margin-left: 20px;
     }
 
     .color {
@@ -27,13 +23,16 @@
         font-size: 50px;
         color: #59918b;
     }
-
     .listitlogo {
-        position: float; visibility: visible; left: 480px; top: 190px; height: 100px; width: 150px; z-index: 200; 
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        top: 150px;
         font-style: bold;
-        font-size: 70px;
+        font-size: 30pt;
         text-align: center;
        
+     }
+     
+     .pText {
+         font-size: 12px;
+         text-align: center;
      }
      
