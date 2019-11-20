@@ -17,15 +17,14 @@
         <div class="list">
             <button class="menyBtn" id="editProfileBtn">Edit Profile</button>
             <button class="menyBtn" id="logoutBtn">Log out</button>
-            <br>
-
-            <div class="hovedDiv"></div><span class="title" id="title">My lists </span>
-            <div class="username" id="username"></div>
-            <br>
+            <br><br>
             <input class="input" type="text" id="titleInput" placeholder="New list title">
             <button class="menyBtn" id="createBtn">Create new list</button>
             <br>
-            <br>
+            <span class="title" id="title">My lists </span>
+            <div class="username" id="username"></div>
+            <br><br>
+            <span>&#10003;</span>
             <div id="container"></div>
         </div>
     </main>
@@ -33,14 +32,14 @@
 
 <script>
 
-
+    // OPPDATERE LISTE TITLE! 
 
     let createBtn = document.getElementById("createBtn");
     let titleInp = document.getElementById("titleInput");
 
     let editProfileBtn = document.getElementById("editProfileBtn");
     editProfileBtn.addEventListener('click', function (evt) {
-        window.location.href = "profileinfo.html"; 
+        window.location.href = "profileinfo.html";
         // må få opp modal, TOM jobber med det
     });
 
@@ -58,17 +57,18 @@
     let username = document.getElementById("username");
     username.innerHTML = "Logged in as: " + userData.username;
 
-    createBtn.addEventListener('click', async function(evt)  {
+    createBtn.addEventListener('click', async function (evt) {
 
         // MÅ SJEKKE OM TITEL ER SKREVET FØRST! HVIS IKKE SÅ MÅ DET IKKE SENDES TIL DB
-        
+
         let url = "http://localhost:3000/user";
 
-        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter id fra sessionStorage for å sende det med
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
         let token = auth.token;
 
         let updata = {
             title: titleInp.value,
+            public: false,
             userid: auth.userid
         }
 
@@ -76,7 +76,7 @@
             method: "POST",
             headers: {
                 "authorization": token,
-                "Content-Type":"application/json"
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(updata)
         }
@@ -86,7 +86,7 @@
             var data = await resp.json();
 
             if (resp.status > 202) {
-                throw(data);
+                throw (data);
             };
 
             loadList();
@@ -94,7 +94,7 @@
         catch (err) {
             console.log(err);
         }
-    });  
+    });
 
     loadList();
 
@@ -102,23 +102,22 @@
 
         try {
 
-            let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+            let auth = JSON.parse(sessionStorage.getItem('auth'));
             let token = auth.token;
 
             let cfg = {
                 method: "GET",
-                headers: { "authorization": token }   // sender med token i header
+                headers: { "authorization": token } 
             };
 
             var resp = await fetch(url, cfg);
             var data = await resp.json();
-            console.log(data);
 
-            if (resp.status > 202) {       // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten fåt ikke dataene.
+            if (resp.status > 202) {    
                 throw (data);
             }
 
-            container.innerHTML = ""; // sletter gammelt container-innhold før listen listes ut på nytt.
+            container.innerHTML = ""; 
 
             for (let value of data) {
                 let listDiv = document.createElement("div");
@@ -129,13 +128,9 @@
 
                 let html = `<li>${value.title}</li>`;
                 listTitle.innerHTML = html;
-
-                let editBtn = document.createElement("button");
-                editBtn.innerHTML = "Edit";
-                editBtn.classList.add("listBtn");
-                editBtn.addEventListener('click', function (evt) {
+                listTitle.addEventListener('click', function (evt) {
                     sessionStorage.setItem("listId", value.id);
-                    sessionStorage.setItem("listTitle", value.title); // legger med list ID
+                    sessionStorage.setItem("listTitle", value.title);
                     window.location.href = "editor.html";
                 });
 
@@ -146,13 +141,35 @@
                     deleteList(value.id);
                 });
 
+                let checkBox = document.createElement("input");
+                checkBox.type = "checkbox";
+                checkBox.classList.add("checkBox");
+
+                if (value.public === "true") {
+                    checkBox.checked = true;
+                } else {
+                    checkBox.checked = false;
+                };
+
+                checkBox.addEventListener('change', function (evt) {
+                    publicTagging(value.public, value.id);
+                });
+
+                let public = document.createElement("p");
+                public.innerText = "Public: "
+
+                let br = document.createElement("br");
+
                 listDiv.appendChild(listTitle);
-                listDiv.appendChild(editBtn);
                 listDiv.appendChild(delBtn);
+                listDiv.appendChild(public);
+                listDiv.appendChild(checkBox);
 
                 container.appendChild(listDiv);
+                container.appendChild(br);
+
             }
-            
+
         }
         catch (err) {
             console.log(err);
@@ -178,6 +195,47 @@
 
         try {
             let resp = await fetch(url, cfg);
+            if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
+                throw (data);
+            };
+
+            loadList();
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function publicTagging(state, id) {
+
+        if (state == "false") {
+            state = "true";
+        } else if (state == "true") {
+            state = "false";
+        };
+
+        let updata = {
+            public: state,
+            listid: id
+        };
+
+        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let token = auth.token;
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            let resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            console.log("resp data sendt tilbake" + data);
             if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
                 throw (data);
             };
