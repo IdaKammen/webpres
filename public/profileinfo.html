@@ -81,13 +81,10 @@
         }
     };
 
-    backBtn.addEventListener('click', async function (evt) {
-
-        // her må brukersiden lastes inn igjen, eller modalen med profileinfo må skjules og brukersiden må vises. 
-
-    });
 
     updateBtn.addEventListener('click', async function (evt) {
+
+// HER MÅ DET SJEKKES OM ALLE FELTENE ER FYLLT INN, HVIS IKKE SKRIV UT ERRORMELDING OG IKKE SEND DATA
 
         let url = "http://localhost:3000/profileinfo";
 
