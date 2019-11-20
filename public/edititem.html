@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/edit.css" />
+    <title>userprofile</title>
+</head>
+
+<body>
+    <header class="header">
+        <p class="logo">List it</p>
+    </header>
+    <main>
+        <section>
+            <div class="hoveddiv">
+                <h1 class="heading edittask" id="heading">Edit task</h1>
+                <p id="item"></p>
+                <input type="text" id="inpItem" class="inputItem" placeholder="New task">
+                <p id="desc"></p>
+                <input type="text" id="inpDesc" class="inputDesc" placeholder="New description">
+                <p id="date"></p>
+                <input type="date" id="inpDate" class="inputDate">
+                <br>
+                <br>
+                <button class="updateBtn" id="updateBtn">Update task</button>
+                <button id="backBtn"> Back </button>
+            </div>
+        </section>
+    </main>
+</body>
+
+<script>
+
+    let inpItem = document.getElementById('inpItem');
+    let inpDesc = document.getElementById('inpDesc');
+    let inpDate = document.getElementById('inpDate');
+
+    let item = document.getElementById('item');
+    let desc = document.getElementById('desc');
+    let newDate = document.getElementById('date');
+    let backBtn = document.getElementById('backBtn');
+    let updateBtn = document.getElementById('updateBtn');
+
+    backBtn.addEventListener('click', function (evt) {
+        window.location.href = "editor.html";
+    });
+
+    let url = "http://localhost:3000/edititem";
+
+    let itemID = sessionStorage.getItem('itemid');
+
+    loadData();
+
+    async function loadData() {
+
+        try {
+            let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+            let token = auth.token;
+
+            let cfg = {
+                method: "GET",
+                headers: { "authorization": token }   // sender med token i header
+            };
+
+            var resp = await fetch(url + "?itemid=" + itemID, cfg);
+            var data = await resp.json();
+
+            console.log(data);
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            item.innerText = "Task: " + data[0].item;
+            desc.innerText = "Description: " + data[0].description;
+            newDate.innerText = "Due date: " + data[0].date.toString().split('T')[0];
+        }
+
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+
+    updateBtn.addEventListener('click', async function (evt) {
+
+        // HER MÅ DET SJEKKES OM ALLE FELTENE ER FYLLT INN, HVIS IKKE SKRIV UT ERRORMELDING OG IKKE SEND DATA
+
+        let url = "http://localhost:3000/edititem";
+
+        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let token = auth.token;
+
+        let newTask = inpItem.value;
+        let newDesc = inpDesc.value;
+        let dueDate = inpDate.value;
+
+        let updata = {
+            item: newTask,
+            description: newDesc,
+            duedate: dueDate,
+            listid: itemID,
+            userid: auth.userid
+
+        }
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            loadData();
+
+        }
+        catch (err) {
+            console.log(err);
+        }
+
+    });
+
+</script>
+
+</html>

@@ -1,5 +1,5 @@
 .list {
-  margin-left: 100px;
+  margin-left: 10%;
 }
 
 .editor {
@@ -25,8 +25,31 @@
 }
 
 .input {
-  width: 400px;
-  height: 30px;
+  width: 15%;
+  padding-left: 10px;
+}
+
+.checkBox {
+  appearance: none;
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.inputItem {
+  width: 15%;
+  padding-left: 10px;
+}
+
+.inputDesc {
+  width: 15%;
+  padding-left: 10px;
+}
+
+.inputDate {
+  width: 120px;
 }
 
 .listDiv{
@@ -35,20 +58,35 @@
   margin-top: 5px;
 }
 
-.checkBox {
-  margin-right: 25px;
-  width: auto;
-  display: inline-block;
-}
-
 .listItem {
-  margin-right: 20px;
-  width: 360px;
-  font-size: 16pt;
+  width: 30%;
+  font-size: 18pt;
   display: inline-block;
 }
 
-.underMeny {
-  width: 102px;
-  margin-bottom: 5px;
+.desc {
+  font-size: 12pt; 
+  width: 1fr;
+  margin-left: 30px;
+  margin-bottom: 10%;
 }
+
+.date {
+  font-size: 10pt;
+  font-weight: bold;
+  color:  #267970;
+  margin-left: 30px;
+}
+
+.updateBtn {
+  width: 50%;
+  font-size: 18px;
+  }
+
+  .edittask {
+    font-size: 20pt;
+  }
+
+  #item {
+    font-size: 20pt;
+  }

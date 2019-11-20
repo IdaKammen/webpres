@@ -28,35 +28,29 @@
         </section>
     </main>
 
-
     <div id="myModal" class="modal">
-
         <div class="modal-content">
-
             <div class="form" id="myForm2">
                 <span class="close">&times;</span>
                 <h2 style="text-align:center;">Create user</h2>
                 <p style>Username</p>
-                <input type="text" id="inpUsername" placeholder="Enter Username">
+                <input type="text" id="inpUsername2" placeholder="Enter Username">
                 <p>Password</p>
-                <input type="password" id="inpPwrd" placeholder="Enter Password">
+                <input type="password" id="inpPwrd2" placeholder="Enter Password">
                 <p>E-mail</p>
                 <input type="email" id="inpEmail" placeholder="Enter E-mail">
                 </br>
                 </br>
                 <button class="createUser" id="createUserBtn">Create user </button>
             </div>
-
         </div>
-
     </div>
-
 </body>
 
 <script>
 
     let inpUsername = document.getElementById('inpUsername');
-    let inpPwrd = document.getElementById('inpPword');
+    let inpPwrd = document.getElementById('inpPwrd');
     let modal = document.getElementById("myModal");
 
 
@@ -99,7 +93,7 @@
                 throw (data);
             };
             console.log("user " + JSON.stringify(data) + " is logged in");
-            sessionStorage.setItem("logindata", JSON.stringify(data));
+            sessionStorage.setItem("auth", JSON.stringify(data));
         }
         catch (err) {
             console.log(err);

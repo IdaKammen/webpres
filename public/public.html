@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/user.css" />
+    <title>public</title>
+</head>
+
+<body>
+    <header class="header">
+        <p class="logo">List it</p>
+
+    </header>
+    <main>
+        <div class="list">
+            <button class="menyBtn" id="backBtn">Back</button>
+            <br>
+            <div class="hovedDiv"></div><span class="title" id="title">Public lists</span>
+            <br>
+            <br>
+            <div id="container"></div>
+        </div>
+    </main>
+</body>
+
+<script> 
+
+    let container = document.getElementById("container");
+
+    let url = "http://localhost:3000/public";
+
+    loadList();
+
+    async function loadList() {
+
+        try {
+
+            let cfg = {
+                method: "GET",
+            };
+
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            }
+
+            container.innerHTML = "";
+
+            for (let value of data) {
+                let listDiv = document.createElement("div");
+                listDiv.classList.add("listDiv");
+
+                let listTitle = document.createElement("span");
+                listTitle.classList.add("listItem");
+
+                let html = `<li>${value.title}</li>`;
+                listTitle.innerHTML = html;
+
+                let showBtn = document.createElement("button");
+                showBtn.innerHTML = "View list";
+                showBtn.classList.add("listBtn");
+                showBtn.addEventListener('click', function (evt) {
+                    sessionStorage.setItem("listId", value.id);
+                    sessionStorage.setItem("listTitle", value.title);
+                    // må åpne modal med list items, enda en get request
+                });
+
+                listDiv.appendChild(listTitle);
+                listDiv.appendChild(showBtn);
+
+                container.appendChild(listDiv);
+            }
+
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+
+</script>
+
+</html>
