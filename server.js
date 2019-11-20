@@ -239,6 +239,56 @@ app.delete('/editor', async function (req, res) {
     }
 });
 
+// ---- ENDPOINTS FOR EDIT ITEM ------------------
+// ---- GET - item descriptions ------------------
+
+app.get('/edititem', async function (req, res) {
+
+    let itemID = req.query.itemid;
+
+    let sql = "SELECT item, description, date FROM items WHERE id = $1";
+    let values = [itemID];
+
+    try {
+        let result = await pool.query(sql, values);
+        res.status(200).json(result.rows);
+
+    } catch (err) {
+        res.status(500).json(err);
+
+    }
+
+});
+
+
+// ---- PUT - update descriptions -----------------
+
+app.put('/edititem', async function (req, res) {
+
+    let updata = req.body; //the data sent from the client
+
+
+    let sql = 'UPDATE items SET item = $1, description = $2, date = $3 WHERE id = $4 RETURNING *';
+    let values = [updata.item, updata.description, updata.duedate, updata.listid];
+
+    try {
+        let result = await pool.query(sql, values);
+
+
+        if (result.rows.length > 0) {
+            res.status(200).json({ msg: "Insert OK", item: result.rows[0].item, description: result.rows[0].description, date: result.rows[0].date }); //send response
+
+        }
+        else {
+            throw "Insert failed";
+        }
+
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
+
 // ---- ENDPOINTS for createuser ---------------
 // ---- POST -----------------------------------
 
