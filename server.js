@@ -58,11 +58,9 @@ app.listen(app.get('port'), () => console.log('server running on port', app.get(
 app.post('/user', async function (req, res) {
 
     let updata = req.body;
-    console.log(updata.title);
-    console.log(updata.userid);
 
-    let sql = 'INSERT INTO lists (id, title, userid) VALUES(DEFAULT, $1, $2) RETURNING *';
-    let values = [updata.title, updata.userid];
+    let sql = 'INSERT INTO lists (id, title, public, userid) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
+    let values = [updata.title, updata.public, updata.userid];
 
     try {
         let result = await pool.query(sql, values);
@@ -121,6 +119,33 @@ app.delete('/user', async function (req, res) { // delete list / delete travel
     }
 });
 
+// --- PUT endpoint USER --------------------------------------------------
+
+app.put('/user', async function (req, res) {
+
+    let updata = req.body; // data som er sendt fra editor siden / clienten
+
+    console.log(updata.public);
+
+    let sql = 'UPDATE lists SET public = $1 WHERE id = $2 RETURNING *';
+    let values = [updata.public, updata.listid];
+
+    try {
+        let result = await pool.query(sql, values);
+
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows);
+        }
+        else {
+            throw "insert failed";
+        }
+    }
+    catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
+
 // -------- EDITOR endpoints ----------------------------------------------
 
 // --- POST endpoint for creating new list item ------
@@ -128,17 +153,40 @@ app.delete('/user', async function (req, res) { // delete list / delete travel
 app.post('/editor', async function (req, res) {
 
     let updata = req.body; // data som er sendt fra editor siden / clienten
-    console.log(updata.item);
 
-    let sql = 'INSERT INTO items (id, item, listid) VALUES(DEFAULT, $1, $2) RETURNING *';
-    let values = [updata.item, updata.listid];
+    let sql = 'INSERT INTO items (id, item, description, listid, done, date) VALUES(DEFAULT, $1, $2, $3, $4, $5) RETURNING *';
+    let values = [updata.item, updata.description, updata.listid, updata.done, updata.duedate];
 
     try {
         let result = await pool.query(sql, values);
 
         if (result.rows.length > 0) {
             res.status(200).json({ msg: "insert OK" });
-            console.log("inser OK");
+        }
+        else {
+            throw "insert failed";
+        }
+    }
+    catch (err) {
+        res.status(500).json({ error: err });
+        console.log(err);
+    }
+});
+
+// --- editor PUT --- new title -----------------------------
+
+app.put('/editor/title', async function (req, res) {
+
+    let updata = req.body; // data som er sendt fra editor siden / clienten
+
+    let sql = 'UPDATE lists SET title = $1 WHERE id = $2 RETURNING *';
+    let values = [updata.title, updata.listid];
+
+    try {
+        let result = await pool.query(sql, values);
+
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows);
         }
         else {
             throw "insert failed";
@@ -154,7 +202,6 @@ app.post('/editor', async function (req, res) {
 app.get('/editor', async function (req, res) {
 
     let listID = req.query.listid; // the data sent from the client
-    console.log(listID);
 
     let sql = 'SELECT * FROM items WHERE listid = $1';
     let values = [listID];
@@ -171,8 +218,6 @@ app.get('/editor', async function (req, res) {
 // --- DELETE endpoint for deleteing list item ----------------------
 
 app.delete('/editor', async function (req, res) {
-
-    console.log("inn delete endpoint");
 
     let updata = req.body; //the data sent from the client
 
@@ -194,7 +239,6 @@ app.delete('/editor', async function (req, res) {
     }
 });
 
-
 // ---- ENDPOINTS for createuser ---------------
 // ---- POST -----------------------------------
 
@@ -213,7 +257,6 @@ app.post('/createuser', async function (req, res) {
 
         if (result.rows.length > 0) {
             res.status(200).json({ msg: "Insert OK", body: updata, result: result, userid: idUser });
-            console.log(result);
         }
         else {
             throw "Insert failed";
@@ -264,21 +307,17 @@ app.post('/', async function (req, res) {
 app.put('/profileinfo', async function (req, res) {
 
     let updata = req.body; //the data sent from the client
-    console.log(updata);
 
     let hash = bcrypt.hashSync(updata.password, 10);
-    
+
     let sql = 'UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4 RETURNING *';
     let values = [updata.username, updata.email, hash, auth.userid];
 
     try {
         let result = await pool.query(sql, values);
 
-        console.log(result);
-
         if (result.rows.length > 0) {
             res.status(200).json({ msg: "Insert OK", username: result.rows[0].username, email: result.rows[0].email, userid: result.rows[0].id }); //send response
-            console.log(result);
         }
         else {
             throw "Insert failed";
@@ -310,4 +349,23 @@ app.get('/profileinfo', async function (req, res) {
 
 });
 
+
+// --- PUBLIC site endpoints -----------------------
+
+app.get('/public', async function (req, res) {
+
+    value = "true";
+
+    let sql = 'SELECT * FROM lists WHERE public = $1';
+    let values = [value];
+
+    try {
+        let result = await pool.query(sql, values);
+        res.status(200).json(result.rows);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
+});
 
