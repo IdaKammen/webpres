@@ -49,3 +49,9 @@
         text-decoration: none;
         cursor: pointer;
       }
+
+      .error {
+        color: red; 
+        font-style: oblique;
+        text-align: center;
+      }
