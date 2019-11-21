@@ -24,6 +24,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use('/user', userAuth);
 app.use('/editor', userAuth);
+app.use('/edititem', userAuth);
 app.use('/profileinfo', userAuth);
 
 //function used for protecting endpoints ---------
@@ -341,7 +342,6 @@ app.post('/createuser', async function (req, res) {
         res.status(500).json({ error: err });
     }
 });
-
 
 
 // ---- HOME INDEX -  POST endpoint --------------------
