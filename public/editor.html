@@ -49,44 +49,49 @@
 
     titleBtn.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/editor/title";
+        if (titleInp.value) {
 
-        let auth = JSON.parse(sessionStorage.getItem("auth"));
-        let token = auth.token;
+            titleInp.classList = "input";
 
-        let newTitle = titleInp.value;
+            let url = "http://localhost:3000/editor/title";
 
-        let updata = {
-            title: newTitle,
-            listid: listID,
-            userid: auth.userid
+            let auth = JSON.parse(sessionStorage.getItem("auth"));
+            let token = auth.token;
+
+            let newTitle = titleInp.value;
+
+            let updata = {
+                title: newTitle,
+                listid: listID,
+                userid: auth.userid
+            }
+
+            let cfg = {
+                method: "PUT",
+                headers: {
+                    "authorization": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                var resp = await fetch(url, cfg);
+                var data = await resp.json();
+                let listTitle = sessionStorage.setItem('listTitle', data[0].title);
+                title.innerText = data[0].title;
+                titleInp.value = "";
+
+                if (resp.status > 202) {
+                    throw (data);
+                };
+            }
+            catch (err) {
+                console.log(err);
+            }
+        } else {
+            titleInp.classList.add("noInp");
         }
-
-        let cfg = {
-            method: "PUT",
-            headers: {
-                "authorization": token,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(updata)
-        }
-
-        try {
-            var resp = await fetch(url, cfg);
-            var data = await resp.json();
-            let listTitle = sessionStorage.setItem('listTitle', data[0].title);
-            title.innerText = data[0].title;
-            titleInp.value = "";
-
-            if (resp.status > 202) {
-                throw (data);
-            };
-        }
-        catch (err) {
-            console.log(err);
-        }
-
-
     });
 
 
@@ -202,41 +207,53 @@
 
     addBtn.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/editor";
+        if (inpDate.value && inpItem.value) {
 
-        let auth = JSON.parse(sessionStorage.getItem("auth"));
-        let token = auth.token;
-        let userID = auth.token;
+            inpItem.classList = "inputItem";
+            inpDate.classList = "inputDate";
 
-        let updata = {
-            listid: listID,
-            userid: userID,
-            item: inpItem.value,
-            description: inpDesc.value,
-            duedate: inpDate.value,
-            done: false
-        }
+            let url = "http://localhost:3000/editor";
 
-        let cfg = {
-            method: "POST",
-            headers: {
-                "authorization": token,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(updata)
-        }
+            let auth = JSON.parse(sessionStorage.getItem("auth"));
+            let token = auth.token;
+            let userID = auth.token;
 
-        try {
-            var resp = await fetch(url, cfg);
-            var data = await resp.json();
+            let updata = {
+                listid: listID,
+                userid: userID,
+                item: inpItem.value,
+                description: inpDesc.value,
+                duedate: inpDate.value,
+                done: false
+            }
 
-            if (resp.status > 202) {
-                throw (data);
-            };
-        }
-        catch (err) {
-            console.log(err);
-        }
+            let cfg = {
+                method: "POST",
+                headers: {
+                    "authorization": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                var resp = await fetch(url, cfg);
+                var data = await resp.json();
+
+                if (resp.status > 202) {
+                    throw (data);
+                };
+            }
+            catch (err) {
+                console.log(err);
+            }
+        } else {
+
+            inpItem.classList.add("noInp");
+            inpDate.classList.add("noInp");
+
+        };
+
         loadList();
     });
 
