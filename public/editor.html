@@ -97,9 +97,6 @@
     let addBtn = document.getElementById("addBtn");
     let container = document.getElementById("container");
 
-    console.log("dette er list ID " + listID);
-    console.log("dette er list title: " + listTitle);
-
     loadList();
 
     async function loadList() {
@@ -130,22 +127,39 @@
                 let listDiv = document.createElement("div");
                 listDiv.classList.add("listDiv");
 
-                let checkBox = document.createElement("input");
-                checkBox.type = "checkbox";
-                checkBox.classList.add("checkBox");
-
                 let listItem = document.createElement("span");
                 listItem.classList.add("listItem");
                 listItem.innerHTML = value.item;
 
-                let description = document.createElement("span");
+                let description = document.createElement("span")
                 description.classList.add("desc");
                 description.innerHTML = "Description: " + value.description;
 
                 let date = document.createElement("div");
                 date.classList.add("date");
-
                 date.innerHTML = "Due date: " + value.date.toString().split('T')[0];
+
+                let checkBox = document.createElement("input");
+                checkBox.type = "checkbox";
+                checkBox.classList.add("checkBox");
+
+                if (value.done === "true") {
+                    checkBox.checked = true;
+                    listItem.style.color = "gray";
+                    date.style.color = "gray";
+                    description.style.color = "gray";
+                    date.innerHTML = "Due date: " + value.date.toString().split('T')[0] + " - task completed";
+
+                } else {
+                    checkBox.checked = false;
+                };
+
+                checkBox.addEventListener('change', function (evt) {
+                    console.log("inne i check event " + value.done + value.id)
+                    doneTagging(value.done, value.id);
+                });
+
+
 
                 let br = document.createElement("br");
                 let hr = document.createElement("hr");
@@ -192,19 +206,15 @@
 
         let auth = JSON.parse(sessionStorage.getItem("auth"));
         let token = auth.token;
-
-        let listItem = inpItem.value;
-        let taskDesc = inpDesc.value;
-        let dueDate = inpDate.value;
-        let checkInfo = false;
+        let userID = auth.token;
 
         let updata = {
-            item: listItem,
             listid: listID,
-            userid: auth.userid,
-            description: taskDesc,
-            duedate: dueDate,
-            done: checkInfo
+            userid: userID,
+            item: inpItem.value,
+            description: inpDesc.value,
+            duedate: inpDate.value,
+            done: false
         }
 
         let cfg = {
@@ -229,6 +239,47 @@
         }
         loadList();
     });
+
+    async function doneTagging(state, id) {
+
+        if (state == "false") {
+            state = "true";
+        } else if (state == "true") {
+            state = "false";
+        };
+
+        let updata = {
+            done: state,
+            itemid: id
+        };
+
+        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let token = auth.token;
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            let resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            console.log("resp data sendt tilbake " + data);
+            if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
+                throw (data);
+            };
+
+            loadList();
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
 
     async function deleteItem(id) {
 
@@ -260,8 +311,7 @@
         catch (err) {
             console.log(err);
         }
-    }
-
+    };
 
 </script>
 

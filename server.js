@@ -239,6 +239,30 @@ app.delete('/editor', async function (req, res) {
     }
 });
 
+// --- PUT endpoint EDITOR --------------------------------------------------
+
+app.put('/editor', async function (req, res) {
+
+    let updata = req.body;
+
+    let sql = 'UPDATE items SET done = $1 WHERE id = $2 RETURNING *';
+    let values = [updata.done, updata.itemid];
+
+    try {
+        let result = await pool.query(sql, values);
+
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows);
+        }
+        else {
+            throw "insert failed";
+        }
+    }
+    catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
 // ---- ENDPOINTS FOR EDIT ITEM ------------------
 // ---- GET - item descriptions ------------------
 
