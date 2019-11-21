@@ -319,27 +319,32 @@ app.put('/edititem', async function (req, res) {
 
 app.post('/createuser', async function (req, res) {
 
-    let updata = req.body; //the data sent from the client
+    let updata = req.body;
 
     let hash = bcrypt.hashSync(updata.password, 10);
 
-    let sql = 'INSERT INTO users (id, username, password, email ) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
-    let values = [updata.username, hash, updata.email];
+    let sql = 'INSERT INTO users (id, password, email, username) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
+    let values = [hash, updata.email, updata.username];
 
     try {
         let result = await pool.query(sql, values);
-        let idUser = result.row[0].id;
 
         if (result.rows.length > 0) {
-            res.status(200).json({ msg: "Insert OK", body: updata, result: result, userid: idUser });
+            let payload = { userid: result.rows[0].id };
+            let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
+            res.status(200).json({
+                email: result.rows[0].email, 
+                userid: result.rows[0].id, 
+                username: result.rows[0].username, 
+                token: tok });
         }
         else {
-            throw "Insert failed";
+            throw "Failed to create user";
         }
 
     }
     catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: err, msg: "could not create new user" });
     }
 });
 
@@ -356,19 +361,20 @@ app.post('/auth', async function (req, res) {
     try {
         let result = await pool.query(sql, values)
 
-        if (result.rows.length == 0) {                                                   
-            res.status(404).json({ msg: "user do not exist" }); 
+        if (result.rows.length == 0) {
+            res.status(404).json({ msg: "user do not exist" });
         }
-        else {                                                                              
+        else {
             let check = bcrypt.compareSync(updata.password, result.rows[0].password);
-            if (check == true) {                                      
-                let payload = { userid: result.rows[0].id };  
+            if (check == true) {
+                let payload = { userid: result.rows[0].id };
                 let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
-                res.status(200).json({ 
-                    email: result.rows[0].email, 
-                    userid: result.rows[0].id, 
-                    username: result.rows[0].username, 
-                    token: tok });
+                res.status(200).json({
+                    email: result.rows[0].email,
+                    userid: result.rows[0].id,
+                    username: result.rows[0].username,
+                    token: tok
+                });
             } else {
                 res.status(401).json({ msg: "wrong password" });
             }
