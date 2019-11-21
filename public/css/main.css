@@ -62,3 +62,7 @@
         text-align: center;
         background-color: #59918b;
         }
+
+        .noInp {
+          border-color: red;
+        }
