@@ -74,7 +74,7 @@
 
     logInBtn.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/";
+        let url = "http://localhost:3000/auth";
 
         let updata = {
             username: inpUsername.value,
@@ -89,10 +89,14 @@
         try {
             let resp = await fetch(url, cfg);
             let data = await resp.json();
-            if (resp.status > 202) {
+
+           if (resp.status === 404) {
+                inpUsername.classList.add("noInp");
+            } else if (resp.status === 401) {
+                inpPwrd.classList.add("noInp");
+            } else if (resp.status > 202) {
                 throw (data);
             };
-            console.log("user " + JSON.stringify(data) + " is logged in");
             sessionStorage.setItem("auth", JSON.stringify(data));
         }
         catch (err) {
