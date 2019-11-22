@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use('/lists', authObj.userAuth);
 app.use('/editor', authObj.userAuth);
 app.use('/edititem', authObj.userAuth);
-app.use('/profileinfo', authObj.userAuth);
+app.use('/profile', authObj.userAuth);
 
 // start server --------------------------------------------------------
 
@@ -198,7 +198,7 @@ app.get('/editor', async function (req, res) {
 
 app.delete('/editor', async function (req, res) {
 
-    let updata = req.body; //the data sent from the client
+    let updata = req.body; 
 
     let sql = 'DELETE FROM items WHERE id = $1 RETURNING *';
     let values = [updata.itemID];
@@ -207,14 +207,14 @@ app.delete('/editor', async function (req, res) {
         let result = await pool.query(sql, values);
 
         if (result.rows.length > 0) {
-            res.status(200).json({ msg: "Delete OK" }); //send response
+            res.status(200).json({ msg: "Delete OK" });
         }
         else {
             throw "Delete failed";
         }
     }
     catch (err) {
-        res.status(500).json({ error: err }); //send error response
+        res.status(500).json({ error: err });
     }
 });
 
@@ -364,7 +364,7 @@ app.post('/auth', async function (req, res) {
 //--- USERPROFILE endpoints ----------------------------------------------
 // --- PUT ---------------------------------------------------
 
-app.put('/profileinfo', async function (req, res) {
+app.put('/profile', async function (req, res) {
 
     let updata = req.body;
 
@@ -390,7 +390,7 @@ app.put('/profileinfo', async function (req, res) {
 
 // --- get ---------------------------
 
-app.get('/profileinfo', async function (req, res) {
+app.get('/profile', async function (req, res) {
 
     let sql = "SELECT username, email FROM users WHERE id = $1";
     let values = [authObj.auth.userid];
@@ -403,6 +403,32 @@ app.get('/profileinfo', async function (req, res) {
         res.status(500).json(err);
     }
 
+});
+
+// --- DELETE profile ------------------------------
+
+app.delete('/profile', async function (req, res) { 
+
+    let updata = req.body;
+
+    console.log(updata);
+
+    let sql = 'DELETE FROM users WHERE id = $1 RETURNING *';
+    let values = [updata.userid];
+
+    try {
+        let result = await pool.query(sql, values);
+
+        if (result.rows.length > 0) {
+            res.status(200).json({ msg: "Delete OK" });
+        }
+        else {
+            throw "Delete failed";
+        }
+    }
+    catch (err) {
+        res.status(500).json({ error: err });
+    }
 });
 
 
