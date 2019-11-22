@@ -2,23 +2,38 @@
     background-color: #ededed;
     border-radius: 5px;
     background-color: #f2f2f2;
+<<<<<<< HEAD
+    padding: 15px;
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+=======
     padding: 20px;
     width: 450px;
     margin-left: auto ;
     margin-right: auto ;
     margin-top: 50px ;
     font-family: 'Verdana', sans-serif;
+>>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
    }
 
    .logIn {
     width: 50%;
-    font-size: 18px;
+    font-size: 16pt;
     }
+<<<<<<< HEAD
+    .createuser{
+    width: 125px;
+    font-size: 12pt;
+    margin-left: 20px;
+    }
+=======
     .createUser{
     width: 45%;
     
     font-size: 18px;
 }
+>>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
 
     .color {
         text-align: center;
@@ -28,12 +43,22 @@
     .listitlogo {
         top: 150px;
         font-style: bold;
+<<<<<<< HEAD
+        font-size: 30pt;
+=======
         color: #59918b;
         font-size: 70px;
+>>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
         text-align: center;
        
      }
      
      .pText {
          font-size: 12px;
+<<<<<<< HEAD
+         text-align: center;
      }
+     
+=======
+     }
+>>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
