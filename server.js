@@ -1,52 +1,34 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const path = require('path');
 const pg = require('pg');
 const jwt = require('jsonwebtoken');
-const cors = require('cors'); //only necessary when you are not running clients on the server
+const cors = require('cors');
+const authObj = require('./modules/auth')
 
 const app = express();
 
+let secretStash;
+ try {
+    secretStash = require("./modules/secrets");
+ } catch (error) {
+     console.log("not running localy so no secrets to share");
+ };
 
-const dbURI = "postgres://nwzjyqympfxqpv:db64364662d38a5811c438757136f15e8039b264998dcf34d400f4711acad962@ec2-54-217-228-25.eu-west-1.compute.amazonaws.com:5432/dascnumjjf9evv" + "?ssl=true";
-const conString = process.env.DATABASE_URL || dbURI;
+const conString = process.env.DATABASE_URL || secretStash.dbURI;
 const pool = new pg.Pool({ connectionString: conString });
-
-const secret = "glederMegtilJul!"; //for tokens - should be stored as an environment variable
-
-let auth;
 
 //--------MIDDLEWARE----------
 
 app.use(cors());
 app.use(express.static('public'));
 app.use(bodyParser.json());
-app.use('/user', userAuth);
-app.use('/editor', userAuth);
-app.use('/edititem', userAuth);
-app.use('/profileinfo', userAuth);
+app.use('/lists', authObj.userAuth);
+app.use('/editor', authObj.userAuth);
+app.use('/edititem', authObj.userAuth);
+app.use('/profileinfo', authObj.userAuth);
 
-//function used for protecting endpoints ---------
-function userAuth(req, res, next) {
-
-
-    let token = req.headers['authorization'];
-
-    if (token) {
-        try {
-            auth = jwt.verify(token, secret);
-            next();
-        } catch (err) {
-            res.status(403).json({ msg: "Not a valid token" });
-        }
-    }
-    else {
-        res.status(403).json({ msg: "No token" });
-    }
-}
-
-// start server -----------------------------------
+// start server --------------------------------------------------------
 
 app.set('port', (process.env.PORT || 3000));
 app.listen(app.get('port'), () => console.log('server running on port', app.get('port')));
@@ -56,7 +38,7 @@ app.listen(app.get('port'), () => console.log('server running on port', app.get(
 
 // --- endpoint for creating new list -----------------------------------
 
-app.post('/user', async function (req, res) {
+app.post('/lists', async function (req, res) {
 
     let updata = req.body;
 
@@ -67,13 +49,12 @@ app.post('/user', async function (req, res) {
         let result = await pool.query(sql, values);
 
         if (result.rows.length > 0) {
-            res.status(200).json({ msg: "insert OK" }); //send response
+            res.status(200).json({ msg: "insert OK" });
         }
         else {
             throw "Insert failed"
         }
     } catch (err) {
-        console.log(err)
         res.status(500).json({ error: err });
     }
 });
@@ -81,10 +62,10 @@ app.post('/user', async function (req, res) {
 
 // --- endpoint for listing lists in user -------------------------------
 
-app.get('/user', async function (req, res) {
+app.get('/lists', async function (req, res) {
 
     let sql = 'SELECT * FROM lists WHERE userid = $1';
-    let values = [auth.userid];
+    let values = [authObj.auth.userid];
 
     try {
         let result = await pool.query(sql, values);
@@ -98,9 +79,9 @@ app.get('/user', async function (req, res) {
 
 // --- endpoint for deleting a list --------------------------------------
 
-app.delete('/user', async function (req, res) { // delete list / delete travel
+app.delete('/lists', async function (req, res) { 
 
-    let updata = req.body; // dataen som sendes fra client-siden
+    let updata = req.body;
 
     let sql = 'DELETE FROM lists WHERE id = $1 RETURNING *';
     let values = [updata.listID];
@@ -122,11 +103,9 @@ app.delete('/user', async function (req, res) { // delete list / delete travel
 
 // --- PUT endpoint USER --------------------------------------------------
 
-app.put('/user', async function (req, res) {
+app.put('/lists', async function (req, res) {
 
-    let updata = req.body; // data som er sendt fra editor siden / clienten
-
-    console.log(updata.public);
+    let updata = req.body; 
 
     let sql = 'UPDATE lists SET public = $1 WHERE id = $2 RETURNING *';
     let values = [updata.public, updata.listid];
@@ -153,7 +132,7 @@ app.put('/user', async function (req, res) {
 
 app.post('/editor', async function (req, res) {
 
-    let updata = req.body; // data som er sendt fra editor siden / clienten
+    let updata = req.body;
 
     let sql = 'INSERT INTO items (id, item, description, listid, done, date) VALUES(DEFAULT, $1, $2, $3, $4, $5) RETURNING *';
     let values = [updata.item, updata.description, updata.listid, updata.done, updata.duedate];
@@ -170,7 +149,6 @@ app.post('/editor', async function (req, res) {
     }
     catch (err) {
         res.status(500).json({ error: err });
-        console.log(err);
     }
 });
 
@@ -202,7 +180,7 @@ app.put('/editor/title', async function (req, res) {
 
 app.get('/editor', async function (req, res) {
 
-    let listID = req.query.listid; // the data sent from the client
+    let listID = req.query.listid;
 
     let sql = 'SELECT * FROM items WHERE listid = $1';
     let values = [listID];
@@ -290,15 +268,13 @@ app.get('/edititem', async function (req, res) {
 
 app.put('/edititem', async function (req, res) {
 
-    let updata = req.body; //the data sent from the client
-
+    let updata = req.body;
 
     let sql = 'UPDATE items SET item = $1, description = $2, date = $3 WHERE id = $4 RETURNING *';
     let values = [updata.item, updata.description, updata.duedate, updata.listid];
 
     try {
         let result = await pool.query(sql, values);
-
 
         if (result.rows.length > 0) {
             res.status(200).json({ msg: "Insert OK", item: result.rows[0].item, description: result.rows[0].description, date: result.rows[0].date }); //send response
@@ -331,7 +307,7 @@ app.post('/createuser', async function (req, res) {
 
         if (result.rows.length > 0) {
             let payload = { userid: result.rows[0].id };
-            let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
+            let tok = jwt.sign(payload, secretStash.secret, { expiresIn: "12h" });
             res.status(200).json({
                 email: result.rows[0].email, 
                 userid: result.rows[0].id, 
@@ -368,7 +344,7 @@ app.post('/auth', async function (req, res) {
             let check = bcrypt.compareSync(updata.password, result.rows[0].password);
             if (check == true) {
                 let payload = { userid: result.rows[0].id };
-                let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
+                let tok = jwt.sign(payload, secretStash.secret, { expiresIn: "12h" });
                 res.status(200).json({
                     email: result.rows[0].email,
                     userid: result.rows[0].id,
@@ -390,12 +366,12 @@ app.post('/auth', async function (req, res) {
 
 app.put('/profileinfo', async function (req, res) {
 
-    let updata = req.body; //the data sent from the client
+    let updata = req.body;
 
     let hash = bcrypt.hashSync(updata.password, 10);
 
     let sql = 'UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4 RETURNING *';
-    let values = [updata.username, updata.email, hash, auth.userid];
+    let values = [updata.username, updata.email, hash, authObj.auth.userid];
 
     try {
         let result = await pool.query(sql, values);
@@ -406,7 +382,6 @@ app.put('/profileinfo', async function (req, res) {
         else {
             throw "Insert failed";
         }
-
     } catch (err) {
         res.status(500).json({ error: err });
     }
@@ -418,17 +393,14 @@ app.put('/profileinfo', async function (req, res) {
 app.get('/profileinfo', async function (req, res) {
 
     let sql = "SELECT username, email FROM users WHERE id = $1";
-    let values = [auth.userid];
+    let values = [authObj.auth.userid];
 
     try {
         let result = await pool.query(sql, values);
         res.status(200).json(result.rows);
 
-        console.log(result.rows);
-
     } catch (err) {
         res.status(500).json(err);
-
     }
 
 });
@@ -450,6 +422,4 @@ app.get('/public', async function (req, res) {
     } catch (err) {
         res.status(500).json(err);
     }
-
 });
-
