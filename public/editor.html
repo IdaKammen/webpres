@@ -31,26 +31,22 @@
 
     <div id="myModal" class="modal">
         <div class="innerForm" id="myForm2">
-        <span class="close">&times;</span>
-        <h1 class="heading edittask" id="heading">Edit task</h1>
-        <p id="item"></p>
-        <input type="text" id="inpItem2" class="modalInp" placeholder="New task">
-        <p id="desc"></p>
-        <input type="text" id="inpDesc2" class="modalInp" placeholder="New description">
-        <p id="date"></p>
-        <input type="date" id="inpDate2" class="inputDate modalInp">
-        <br>
-        <br>
-        <button class="updateBtn" id="updateBtn">Update task</button>
+            <span class="close">&times;</span>
+            <h1 class="heading edittask" id="heading">Edit task</h1>
+            <p id="item"></p>
+            <input type="text" id="inpItem2" class="modalInp" placeholder="New task">
+            <p id="desc"></p>
+            <input type="text" id="inpDesc2" class="modalInp" placeholder="New description">
+            <p id="date"></p>
+            <input type="date" id="inpDate2" class="inputDate modalInp">
+            <br>
+            <br>
+            <button class="updateBtn" id="updateBtn">Update task</button>
         </div>
     </div>
 </body>
 
 <script>
-
-    let url = "http://localhost:3000/editor";
-
-
     let title = document.getElementById("title");
     let titleInp = document.getElementById("titleInp");
     let titleBtn = document.getElementById("titleBtn");
@@ -72,16 +68,28 @@
 
     let updateBtn = document.getElementById('updateBtn');
 
+    let addBtn = document.getElementById("addBtn");
+    let container = document.getElementById("container");
+    let listID = sessionStorage.getItem('listId');
+    let listTitle = sessionStorage.getItem('listTitle');
+    title.innerText = listTitle;
+
     let span = document.getElementsByClassName("close")[0];
     span.onclick = function () {
         modal.style.display = "none";
     }
 
+    backBtn.addEventListener('click', function (evt) {
+        window.location.href = "user.html";
+    });
 
-    let listID = sessionStorage.getItem('listId');
-    let listTitle = sessionStorage.getItem('listTitle');
+    let url;
 
-    title.innerText = listTitle;
+    if (window.location.hostname == "localhost") {
+        url = "https://localhost:3000" + "/editor";
+    } else {
+        url = window.location.hostname + "/editor";
+    };
 
     titleBtn.addEventListener('click', async function (evt) {
 
@@ -89,7 +97,11 @@
 
             titleInp.classList = "input";
 
-            let url = "http://localhost:3000/editor/title";
+            if (window.location.hostname == "localhost") {
+                url = "https://localhost:3000" + "/editor/title";
+            } else {
+                url = window.location.hostname + "/editor/title";
+            };
 
             let auth = JSON.parse(sessionStorage.getItem("auth"));
             let token = auth.token;
@@ -129,14 +141,6 @@
             titleInp.classList.add("noInp");
         }
     });
-
-
-    backBtn.addEventListener('click', function (evt) {
-        window.location.href = "user.html";
-    });
-
-    let addBtn = document.getElementById("addBtn");
-    let container = document.getElementById("container");
 
     loadList();
 
@@ -198,7 +202,7 @@
                 });
 
                 let br = document.createElement("br");
-                
+
 
                 let deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Delete";
@@ -225,7 +229,7 @@
                 listDiv.appendChild(date);
 
                 container.appendChild(listDiv);
-                
+
             }
         }
         catch (err) {
@@ -241,7 +245,13 @@
             inpItem.classList = "inputItem";
             inpDate.classList = "inputDate";
 
-            let url = "http://localhost:3000/editor";
+            let url;
+
+            if (window.location.hostname == "localhost") {
+                url = "https://localhost:3000" + "/editor";
+            } else {
+                url = window.location.hostname + "/editor";
+            };
 
             let auth = JSON.parse(sessionStorage.getItem("auth"));
             let token = auth.token;
@@ -360,7 +370,12 @@
 
     async function loadData() {
 
-        let url = "http://localhost:3000/edititem";
+        let url;
+        if (window.location.hostname == "localhost") {
+            url = "https://localhost:3000" + "/edititem";
+        } else {
+            url = window.location.hostname + "/edititem";
+        };
 
         let itemID = sessionStorage.getItem('itemid');
 
@@ -394,7 +409,6 @@
             });
 
         }
-
         catch (err) {
             console.log(err);
         }
@@ -402,10 +416,14 @@
 
     async function editItem(item, desc, date) {
 
-        console.log("inni edit item funk");
         let itemID = sessionStorage.getItem('itemid');
 
-        let url = "http://localhost:3000/edititem";
+        let url;
+        if (window.location.hostname == "localhost") {
+            url = "https://localhost:3000" + "/edititem";
+        } else {
+            url = window.location.hostname + "/edititem";
+        };
 
         let auth = JSON.parse(sessionStorage.getItem('auth'));
         let token = auth.token;

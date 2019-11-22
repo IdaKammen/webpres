@@ -14,7 +14,7 @@
     <main>
         <section>
             <div class="form" id="myForm">
-                <h2 style="text-align:center";>Log in</h2>
+                <h2 style="text-align:center" ;>Log in</h2>
                 <p>Username</p>
                 <input type="text" id="inpUsername" placeholder="Enter Username">
                 <p>Password</p>
@@ -76,15 +76,11 @@
 
     logInBtn.addEventListener('click', async function (evt) {
 
-        if(window.location.hostname == "localhost"){
+        if (window.location.hostname == "localhost") {
             url = "https://localhost:3000" + "/auth";
         } else {
             url = window.location.hostname + "/auth";
         };
-
-        //let url = "http://localhost:3000/auth"
-
-        //let url = "https://" + window.location.hostname + ":3000/auth";
 
         console.log(url);
 
@@ -121,7 +117,11 @@
 
         if (inpUsername2.value && inpPassword2.value && inpEmail.value) {
 
-            let url = "http://localhost:3000/createuser";
+            if (window.location.hostname == "localhost") {
+                url = "https://localhost:3000" + "/createuser";
+            } else {
+                url = window.location.hostname + "/createuser";
+            };
 
             let updata = {
                 username: inpUsername2.value,

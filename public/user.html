@@ -90,7 +90,12 @@
 
     let container = document.getElementById("container");
 
-    let url = "http://localhost:3000/lists";
+    let url;
+    if (window.location.hostname == "localhost") {
+        url = "https://localhost:3000" + "/lists";
+    } else {
+        url = window.location.hostname + "/lists";
+    };
 
     let userData = JSON.parse(sessionStorage.getItem("auth"));
     let username = document.getElementById("username");
@@ -102,7 +107,12 @@
 
             titleInp.classList = "input";
 
-            let url = "http://localhost:3000/lists";
+            let url;
+            if (window.location.hostname == "localhost") {
+                url = "https://localhost:3000" + "/lists";
+            } else {
+                url = window.location.hostname + "/lists";
+            };
 
             let auth = JSON.parse(sessionStorage.getItem('auth'));
             let token = auth.token;
@@ -222,12 +232,11 @@
         }
     };
 
-    // ---------------------------------------    
     async function deleteList(id) {
 
         let updata = { listID: id };
 
-        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
         let token = auth.token;
 
         let cfg = {
@@ -241,7 +250,7 @@
 
         try {
             let resp = await fetch(url, cfg);
-            if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
+            if (resp.status > 202) {
                 throw (data);
             };
 
@@ -265,7 +274,7 @@
             listid: id
         };
 
-        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
         let token = auth.token;
 
         let cfg = {
@@ -296,7 +305,12 @@
 
     async function loadUser() {
 
-        let url = "http://localhost:3000/profile";
+        let url;
+        if (window.location.hostname == "localhost") {
+            url = "https://localhost:3000" + "/profile";
+        } else {
+            url = window.location.hostname + "/profile";
+        };
 
         try {
             let auth = JSON.parse(sessionStorage.getItem('auth'));
@@ -327,7 +341,12 @@
 
         // HER MÅ DET SJEKKES OM ALLE FELTENE ER FYLLT INN, HVIS IKKE SKRIV UT ERRORMELDING OG IKKE SEND DATA
 
-        let url = "http://localhost:3000/profile";
+        let url;
+        if (window.location.hostname == "localhost") {
+            url = "https://localhost:3000" + "/profile";
+        } else {
+            url = window.location.hostname + "/profile";
+        };
 
         let auth = JSON.parse(sessionStorage.getItem('auth'));
         let token = auth.token;
@@ -368,7 +387,12 @@
 
         if (confirm('Are you sure you want to delete user?')) {
 
-            let url = "http://localhost:3000/profile";
+            let url;
+            if (window.location.hostname == "localhost") {
+                url = "https://localhost:3000" + "/profile";
+            } else {
+                url = window.location.hostname + "/profile";
+            };
 
             let auth = JSON.parse(sessionStorage.getItem('auth'));
             let token = auth.token;
@@ -395,7 +419,7 @@
             catch (err) {
                 console.log(err);
             }
-        } 
+        }
     });
 
 </script>

@@ -29,7 +29,12 @@
 
     let container = document.getElementById("container");
 
-    let url = "http://localhost:3000/public";
+    let url;
+        if (window.location.hostname == "localhost") {
+            url = "https://localhost:3000" + "/public";
+        } else {
+            url = window.location.hostname + "/public";
+        };
 
     loadList();
 
