@@ -24,22 +24,63 @@
             <span class="title" id="title">My lists </span>
             <div class="username" id="username"></div>
             <br><br>
-            <span>&#10003;</span>
             <div id="container"></div>
         </div>
     </main>
+
+    <div id="myModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="innerForm" id="myForm2">
+                <span class="close">&times;</span>
+                <h1 class="heading profileheding">Profile information</h1>
+                <p id="username2">Username</p>
+                <input type="text" id="inpUsername" placeholder=" New username">
+                <p id="email">E-mail address</p>
+                <input type="email" id="inpEmail" placeholder="New email">
+                <p id="psw">Create new password</p>
+                <input type="password" id="inpNew" placeholder=" New password">
+                <br>
+                <br>
+                <button class="updateBTN" id="updateBtn">Update info</button>
+                <button class="deletuser" id="deleteUser">Delete useraccount</button>
+
+            </div>
+        </div>
 </body>
 
 <script>
 
+    let inpUsername = document.getElementById('inpUsername');
+    let inpEmail = document.getElementById('inpEmail');
+    let inpNewPassword = document.getElementById('inpNew');
+
+    let username2 = document.getElementById('username2');
+    let psw = document.getElementById('psw');
+    let email = document.getElementById('email');
+    let updateBtn = document.getElementById('updateBtn');
+
+    let deletUSER = document.getElementById("deleteUser");
+
+    let modal = document.getElementById("myModal");
+    modal.style.display = "none";
+    let modalBtn = document.getElementById("editProfileBtn");
+
+    let span = document.getElementsByClassName("close")[0];
+
+    modalBtn.onclick = function () {
+        modal.style.display = "block";
+        loadUser();
+    };
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
+
     let createBtn = document.getElementById("createBtn");
     let titleInp = document.getElementById("titleInput");
 
-    let editProfileBtn = document.getElementById("editProfileBtn");
-    editProfileBtn.addEventListener('click', function (evt) {
-        window.location.href = "profileinfo.html";
-        // må få opp modal, TOM jobber med det
-    });
 
     let logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener('click', function (evt) {
@@ -49,7 +90,7 @@
 
     let container = document.getElementById("container");
 
-    let url = "http://localhost:3000/user";
+    let url = "http://localhost:3000/lists";
 
     let userData = JSON.parse(sessionStorage.getItem("auth"));
     let username = document.getElementById("username");
@@ -61,7 +102,7 @@
 
             titleInp.classList = "input";
 
-            let url = "http://localhost:3000/user";
+            let url = "http://localhost:3000/lists";
 
             let auth = JSON.parse(sessionStorage.getItem('auth'));
             let token = auth.token;
@@ -93,7 +134,6 @@
                 loadList();
             }
             catch (err) {
-                console.log(err);
             }
         } else {
 
@@ -241,8 +281,7 @@
             let resp = await fetch(url, cfg);
             var data = await resp.json();
 
-            console.log("resp data sendt tilbake" + data);
-            if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
+            if (resp.status > 202) {
                 throw (data);
             };
 
@@ -252,6 +291,112 @@
             console.log(err);
         }
     }
+
+    // ---- edit user profile code -------------------
+
+    async function loadUser() {
+
+        let url = "http://localhost:3000/profile";
+
+        try {
+            let auth = JSON.parse(sessionStorage.getItem('auth'));
+            let token = auth.token;
+
+            let cfg = {
+                method: "GET",
+                headers: { "authorization": token }
+            };
+
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            username2.innerText = "Username: " + data[0].username;
+            email.innerText = "Email: " + data[0].email;
+        }
+
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+    updateBtn.addEventListener('click', async function (evt) {
+
+        // HER MÅ DET SJEKKES OM ALLE FELTENE ER FYLLT INN, HVIS IKKE SKRIV UT ERRORMELDING OG IKKE SEND DATA
+
+        let url = "http://localhost:3000/profile";
+
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
+        let token = auth.token;
+
+        let updata = {
+            username: inpUsername.value,
+            password: inpNewPassword.value,
+            email: inpEmail.value
+        }
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            loadUser();
+
+        }
+        catch (err) {
+            console.log(err);
+        }
+
+    });
+
+    deletUSER.addEventListener('click', async function (evt) {
+
+        if (confirm('Are you sure you want to delete user?')) {
+
+            let url = "http://localhost:3000/profile";
+
+            let auth = JSON.parse(sessionStorage.getItem('auth'));
+            let token = auth.token;
+            let updata = { userid: auth.userid };
+
+            let cfg = {
+                method: "DELETE",
+                headers: {
+                    "authorization": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                let resp = await fetch(url, cfg);
+                if (resp.status > 202) {
+                    throw (data);
+                };
+
+                sessionStorage.clear();
+                window.location.href = "index.html";
+            }
+            catch (err) {
+                console.log(err);
+            }
+        } 
+    });
 
 </script>
 
