@@ -1,0 +1,92 @@
+.list {
+  margin-left: 10%;
+}
+
+.editor {
+  margin-bottom: -5px;
+}
+
+.listTitle {
+  font-size: 45px;
+  color: #1a1919;
+  margin-top: 25px;
+}
+
+.listBtn {
+  background-color: #e7e7e7;
+  font-size: 10pt;
+  color: rgb(19, 18, 18);
+  padding: 3px 3px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+.input {
+  width: 15%;
+  padding-left: 10px;
+}
+
+.checkBox {
+  appearance: none;
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.inputItem {
+  width: 15%;
+  padding-left: 10px;
+}
+
+.inputDesc {
+  width: 15%;
+  padding-left: 10px;
+}
+
+.inputDate {
+  width: 120px;
+}
+
+.listDiv{
+  width: 1fr;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.listItem {
+  width: 30%;
+  font-size: 18pt;
+  display: inline-block;
+}
+
+.desc {
+  font-size: 12pt; 
+  width: 1fr;
+  margin-left: 30px;
+  margin-bottom: 10%;
+}
+
+.date {
+  font-size: 10pt;
+  font-weight: bold;
+  color:  #267970;
+  margin-left: 30px;
+}
+
+.updateBtn {
+  width: 50%;
+  font-size: 18px;
+  }
+
+  .edittask {
+    font-size: 20pt;
+  }
+
+  #item {
+    font-size: 20pt;
+  }
