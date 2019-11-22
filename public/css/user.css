@@ -1,0 +1,85 @@
+.list {
+    margin-left: 100px;
+  }
+
+  .hovedDiv {
+    width: 1fr; 
+    overflow : hidden;
+  }
+
+  .title {
+    font-size: 50px;
+    color: #1a1919;
+    margin-bottom: 15px;
+    margin-top: 20px;
+    display: inline-block;
+  }
+
+  .username{
+    margin-left: 20px;
+    display: inline-block;
+  }
+  
+  .listBtn {
+    background-color: #e7e7e7;
+    font-size: 10pt;
+    color: rgb(19, 18, 18);
+    padding: 3px 3px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    display: inline-block;
+  }
+
+  .checkBox {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    background-color: #e7e7e7;
+    border: 1px solid #cdcfcf;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+    position: relative;
+  }
+
+  .checkBox:checked {
+    content: "\2713";
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
+    font-size: 16px;
+    font-weight: 600;
+    color: #000000;
+    text-align: center;
+    background-color: #59918b;
+    }
+  
+  
+  .listDiv{
+    width: 1fr;
+    overflow: hidden;
+  }
+  
+  .listItem {
+    margin-right: 20px;
+    width: 300px;
+    font-size: 16pt;
+    display: inline-block;
+  }
+
+  .listItem:hover {
+    cursor: pointer;
+    font-size: 18pt;
+    color:  #267970;
+  }
+  
+
+  .input {
+    width: 200px;
+    height: 30px;
+  }
+
+  p {
+    display: inline-block;
+    font-size: 10pt;
+  }
+  

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/profileinfo.css" />
+    <title>userprofile</title>
+</head>
+
+<body>
+    <header class="header">
+        <p class="logo">List it</p>
+    </header>
+    <main>
+        <section>
+            <h1 class="heading profileheding">Profile information</h1>
+            <div class="form">
+                <p id="username">Username</p>
+                <input type="text" id="inpUsername" placeholder=" New username">
+                <p id="email">E-mail address</p>
+                <input type="email" id="inpEmail" placeholder="New email">
+                <p id="psw">Create new password</p>
+                <input type="password" id="inpNew" placeholder=" New password">
+                <br>
+                <br>
+                <button class="createUser" id="updateBtn">Update info</button>
+                <button id="backBtn" style="margin-left: 20%"> Back </button>
+            </div>
+        </section>
+    </main>
+</body>
+
+<script>
+
+    let inpUserame = document.getElementById('inpUsername');
+    let inpEmail = document.getElementById('inpEmail');
+    let inpNewPassword = document.getElementById('inpNew');
+
+    let username = document.getElementById('username');
+    let psw = document.getElementById('psw');
+    let email = document.getElementById('email');
+    let backBtn = document.getElementById('backBtn');
+    let updateBtn = document.getElementById('updateBtn');
+
+    let url = "http://localhost:3000/profileinfo";
+
+    loadUser();
+
+    async function loadUser() {
+
+        try {
+            let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+            let token = auth.token;
+
+            console.log(auth.userid);
+
+            let cfg = {
+                method: "GET",
+                headers: { "authorization": token }   // sender med token i header
+            };
+
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            console.log(data);
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            let userInfo = JSON.stringify(data, cfg);
+            console.log(userInfo);
+
+            username.innerText = "Username: " + data[0].username;
+            email.innerText = "Email: " + data[0].email;
+        }
+
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+
+    updateBtn.addEventListener('click', async function (evt) {
+
+// HER MÅ DET SJEKKES OM ALLE FELTENE ER FYLLT INN, HVIS IKKE SKRIV UT ERRORMELDING OG IKKE SEND DATA
+
+        let url = "http://localhost:3000/profileinfo";
+
+        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let token = auth.token;
+
+        let updata = {
+            username: inpUsername.value,
+            password: inpNewPassword.value,
+            email: inpEmail.value
+        }
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            loadUser();
+
+        }
+        catch (err) {
+            console.log(err);
+        }
+
+    });
+
+
+
+</script>
+
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/edit.css" />
+    <title>Editmode</title>
+</head>
+
+<body>
+    <p class="logo">List it</p>
+
+    <div class="list">
+        <button class="menyBtn" id="backBtn">Back</button>
+        <br>
+        <div id="title" class="listTitle"></div>
+        <br>
+        <input class="input" type="text" id="titleInp" placeholder="new title">
+        <button id="titleBtn" class="underMeny">change title</button>
+        <br>
+        <br>
+        <input class="inputItem" type="text" id="inpItem" placeholder="Task">
+        <input class="inputDesc" type="text" id="inpDesc" placeholder="Description">
+        <input class="inputDate" type="date" id="inpDate">
+        <button id="addBtn" class="underMeny">add task</button>
+        <br><br>
+        <div id="container"></div>
+    </div>
+</body>
+
+<script>
+
+    let url = "http://localhost:3000/editor";
+
+
+    let title = document.getElementById("title");
+    let titleInp = document.getElementById("titleInp");
+    let inpItem = document.getElementById("inpItem");
+    let inpDesc = document.getElementById("inpDesc");
+    let inpDate = document.getElementById("inpDate");
+    let titleBtn = document.getElementById("titleBtn");
+    let backBtn = document.getElementById("backBtn");
+
+    let listID = sessionStorage.getItem('listId');
+    let listTitle = sessionStorage.getItem('listTitle');
+    // setter title fra storage til list title. 
+    title.innerText = listTitle;
+
+    titleBtn.addEventListener('click', async function (evt) {
+
+        let url = "http://localhost:3000/editor/title";
+
+        let auth = JSON.parse(sessionStorage.getItem("auth"));
+        let token = auth.token;
+
+        let newTitle = titleInp.value;
+
+        let updata = {
+            title: newTitle,
+            listid: listID,
+            userid: auth.userid
+        }
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+            let listTitle = sessionStorage.setItem('listTitle', data[0].title);
+            title.innerText = data[0].title;
+            titleInp.value = "";
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+        }
+        catch (err) {
+            console.log(err);
+        }
+
+
+    });
+
+
+    backBtn.addEventListener('click', function (evt) {
+        window.location.href = "user.html";
+    });
+
+    let addBtn = document.getElementById("addBtn");
+    let container = document.getElementById("container");
+
+    console.log("dette er list ID " + listID);
+    console.log("dette er list title: " + listTitle);
+
+    loadList();
+
+    async function loadList() {
+
+        try {
+
+            var auth = JSON.parse(sessionStorage.getItem("auth"));
+            let token = auth.token;
+
+            let cfg = {
+                method: "GET",
+                headers: { "authorization": token }
+            };
+
+            var resp = await fetch(url + "?listid=" + listID, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            container.innerHTML = "";
+
+            console.log(data);
+
+            for (let value of data) {
+
+                let listDiv = document.createElement("div");
+                listDiv.classList.add("listDiv");
+
+                let checkBox = document.createElement("input");
+                checkBox.type = "checkbox";
+                checkBox.classList.add("checkBox");
+
+                let listItem = document.createElement("span");
+                listItem.classList.add("listItem");
+                listItem.innerHTML = value.item;
+
+                let description = document.createElement("span");
+                description.classList.add("desc");
+                description.innerHTML = "Description: " + value.description;
+
+                let date = document.createElement("div");
+                date.classList.add("date");
+
+                date.innerHTML = "Due date: " + value.date.toString().split('T')[0];
+
+                let br = document.createElement("br");
+                let hr = document.createElement("hr");
+
+                let deleteBtn = document.createElement("button");
+                deleteBtn.textContent = "Delete";
+                deleteBtn.classList.add("listBtn");
+                deleteBtn.addEventListener('click', function (evt) {
+                    deleteItem(value.id);
+                    console.log("inni eventlistener i deleteBtn " + value.id);
+                });
+
+                let editBtn = document.createElement("button");
+                editBtn.textContent = "Edit";
+                editBtn.classList.add("listBtn");
+                editBtn.addEventListener('click', function (evt) {
+                    window.location.href = "edititem.html";
+                    sessionStorage.setItem('itemid', value.id);
+                });
+
+                listDiv.appendChild(checkBox);
+                listDiv.appendChild(listItem);
+                listDiv.appendChild(deleteBtn);
+                listDiv.appendChild(editBtn);
+                listDiv.appendChild(br);
+                listDiv.appendChild(description);
+                listDiv.appendChild(date);
+
+                container.appendChild(listDiv);
+                container.appendChild(hr);
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+
+    // Hver gang en list item legges til/lages så legges den opp i tabellen på DB.! Da trenger man ikke Save btn?
+
+    addBtn.addEventListener('click', async function (evt) {
+
+        let url = "http://localhost:3000/editor";
+
+        let auth = JSON.parse(sessionStorage.getItem("auth"));
+        let token = auth.token;
+
+        let listItem = inpItem.value;
+        let taskDesc = inpDesc.value;
+        let dueDate = inpDate.value;
+        let checkInfo = false;
+
+        let updata = {
+            item: listItem,
+            listid: listID,
+            userid: auth.userid,
+            description: taskDesc,
+            duedate: dueDate,
+            done: checkInfo
+        }
+
+        let cfg = {
+            method: "POST",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+        }
+        catch (err) {
+            console.log(err);
+        }
+        loadList();
+    });
+
+    async function deleteItem(id) {
+
+        let updata = { itemID: id };
+
+        let auth = JSON.parse(sessionStorage.getItem("auth"));
+        let token = auth.token;
+
+        console.log("updata inne i delete Item " + updata);
+
+        let cfg = {
+            method: "DELETE",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            let resp = await fetch(url, cfg);
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            loadList();
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+
+</script>
+
+</html>
