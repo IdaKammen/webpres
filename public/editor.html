@@ -49,44 +49,49 @@
 
     titleBtn.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/editor/title";
+        if (titleInp.value) {
 
-        let auth = JSON.parse(sessionStorage.getItem("auth"));
-        let token = auth.token;
+            titleInp.classList = "input";
 
-        let newTitle = titleInp.value;
+            let url = "http://localhost:3000/editor/title";
 
-        let updata = {
-            title: newTitle,
-            listid: listID,
-            userid: auth.userid
+            let auth = JSON.parse(sessionStorage.getItem("auth"));
+            let token = auth.token;
+
+            let newTitle = titleInp.value;
+
+            let updata = {
+                title: newTitle,
+                listid: listID,
+                userid: auth.userid
+            }
+
+            let cfg = {
+                method: "PUT",
+                headers: {
+                    "authorization": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                var resp = await fetch(url, cfg);
+                var data = await resp.json();
+                let listTitle = sessionStorage.setItem('listTitle', data[0].title);
+                title.innerText = data[0].title;
+                titleInp.value = "";
+
+                if (resp.status > 202) {
+                    throw (data);
+                };
+            }
+            catch (err) {
+                console.log(err);
+            }
+        } else {
+            titleInp.classList.add("noInp");
         }
-
-        let cfg = {
-            method: "PUT",
-            headers: {
-                "authorization": token,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(updata)
-        }
-
-        try {
-            var resp = await fetch(url, cfg);
-            var data = await resp.json();
-            let listTitle = sessionStorage.setItem('listTitle', data[0].title);
-            title.innerText = data[0].title;
-            titleInp.value = "";
-
-            if (resp.status > 202) {
-                throw (data);
-            };
-        }
-        catch (err) {
-            console.log(err);
-        }
-
-
     });
 
 
@@ -96,9 +101,6 @@
 
     let addBtn = document.getElementById("addBtn");
     let container = document.getElementById("container");
-
-    console.log("dette er list ID " + listID);
-    console.log("dette er list title: " + listTitle);
 
     loadList();
 
@@ -130,22 +132,39 @@
                 let listDiv = document.createElement("div");
                 listDiv.classList.add("listDiv");
 
-                let checkBox = document.createElement("input");
-                checkBox.type = "checkbox";
-                checkBox.classList.add("checkBox");
-
                 let listItem = document.createElement("span");
                 listItem.classList.add("listItem");
                 listItem.innerHTML = value.item;
 
-                let description = document.createElement("span");
+                let description = document.createElement("span")
                 description.classList.add("desc");
                 description.innerHTML = "Description: " + value.description;
 
                 let date = document.createElement("div");
                 date.classList.add("date");
-
                 date.innerHTML = "Due date: " + value.date.toString().split('T')[0];
+
+                let checkBox = document.createElement("input");
+                checkBox.type = "checkbox";
+                checkBox.classList.add("checkBox");
+
+                if (value.done === "true") {
+                    checkBox.checked = true;
+                    listItem.style.color = "gray";
+                    date.style.color = "gray";
+                    description.style.color = "gray";
+                    date.innerHTML = "Due date: " + value.date.toString().split('T')[0] + " - task completed";
+
+                } else {
+                    checkBox.checked = false;
+                };
+
+                checkBox.addEventListener('change', function (evt) {
+                    console.log("inne i check event " + value.done + value.id)
+                    doneTagging(value.done, value.id);
+                });
+
+
 
                 let br = document.createElement("br");
                 let hr = document.createElement("hr");
@@ -188,27 +207,74 @@
 
     addBtn.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/editor";
+        if (inpDate.value && inpItem.value) {
 
-        let auth = JSON.parse(sessionStorage.getItem("auth"));
-        let token = auth.token;
+            inpItem.classList = "inputItem";
+            inpDate.classList = "inputDate";
 
-        let listItem = inpItem.value;
-        let taskDesc = inpDesc.value;
-        let dueDate = inpDate.value;
-        let checkInfo = false;
+            let url = "http://localhost:3000/editor";
+
+            let auth = JSON.parse(sessionStorage.getItem("auth"));
+            let token = auth.token;
+            let userID = auth.token;
+
+            let updata = {
+                listid: listID,
+                userid: userID,
+                item: inpItem.value,
+                description: inpDesc.value,
+                duedate: inpDate.value,
+                done: false
+            }
+
+            let cfg = {
+                method: "POST",
+                headers: {
+                    "authorization": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                var resp = await fetch(url, cfg);
+                var data = await resp.json();
+
+                if (resp.status > 202) {
+                    throw (data);
+                };
+            }
+            catch (err) {
+                console.log(err);
+            }
+        } else {
+
+            inpItem.classList.add("noInp");
+            inpDate.classList.add("noInp");
+
+        };
+
+        loadList();
+    });
+
+    async function doneTagging(state, id) {
+
+        if (state == "false") {
+            state = "true";
+        } else if (state == "true") {
+            state = "false";
+        };
 
         let updata = {
-            item: listItem,
-            listid: listID,
-            userid: auth.userid,
-            description: taskDesc,
-            duedate: dueDate,
-            done: checkInfo
-        }
+            done: state,
+            itemid: id
+        };
+
+        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let token = auth.token;
 
         let cfg = {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "authorization": token,
                 "Content-Type": "application/json"
@@ -217,18 +283,20 @@
         }
 
         try {
-            var resp = await fetch(url, cfg);
+            let resp = await fetch(url, cfg);
             var data = await resp.json();
 
-            if (resp.status > 202) {
+            console.log("resp data sendt tilbake " + data);
+            if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
                 throw (data);
             };
+
+            loadList();
         }
         catch (err) {
             console.log(err);
         }
-        loadList();
-    });
+    };
 
     async function deleteItem(id) {
 
@@ -260,8 +328,7 @@
         catch (err) {
             console.log(err);
         }
-    }
-
+    };
 
 </script>
 

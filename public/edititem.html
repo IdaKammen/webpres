@@ -56,26 +56,36 @@
     async function loadData() {
 
         try {
-            let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+            let auth = JSON.parse(sessionStorage.getItem('auth'));
             let token = auth.token;
 
             let cfg = {
                 method: "GET",
-                headers: { "authorization": token }   // sender med token i header
+                headers: { "authorization": token }
             };
 
             var resp = await fetch(url + "?itemid=" + itemID, cfg);
             var data = await resp.json();
 
-            console.log(data);
+            console.log("data fått tilbake fra server " + JSON.stringify(data));
 
             if (resp.status > 202) {
                 throw (data);
             };
 
-            item.innerText = "Task: " + data[0].item;
-            desc.innerText = "Description: " + data[0].description;
-            newDate.innerText = "Due date: " + data[0].date.toString().split('T')[0];
+            let task = data[0].item;
+            let descr = data[0].description;
+            let longDate = data[0].date;
+            let shortDate = data[0].date.toString().split('T')[0];
+            
+            item.innerText = "Task: " + task;
+            desc.innerText = "Description: " + descr;
+            newDate.innerText = "Due date: " + shortDate;
+
+            updateBtn.addEventListener('click', async function (evt) {
+                editItem(task, descr, longDate);
+            });
+
         }
 
         catch (err) {
@@ -83,19 +93,34 @@
         }
     };
 
-
-    updateBtn.addEventListener('click', async function (evt) {
-
-        // HER MÅ DET SJEKKES OM ALLE FELTENE ER FYLLT INN, HVIS IKKE SKRIV UT ERRORMELDING OG IKKE SEND DATA
+    async function editItem(item, desc, date) {
 
         let url = "http://localhost:3000/edititem";
 
-        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
         let token = auth.token;
 
-        let newTask = inpItem.value;
-        let newDesc = inpDesc.value;
-        let dueDate = inpDate.value;
+        let newTask;
+        let newDesc;
+        let newDate;
+
+        if (inpItem.value) {
+            newTask = inpItem.value;
+        } else {
+            newTask = item;
+        };
+
+        if (inpDesc.value) {
+            newDesc = inpDesc.value;
+        } else {
+            newDesc = desc;
+        };
+
+        if (inpDate.value) {
+            dueDate = inpDate.value;
+        } else {
+            dueDate = date;
+        };
 
         let updata = {
             item: newTask,
@@ -103,7 +128,6 @@
             duedate: dueDate,
             listid: itemID,
             userid: auth.userid
-
         }
 
         let cfg = {
@@ -124,13 +148,11 @@
             };
 
             loadData();
-
         }
         catch (err) {
             console.log(err);
         }
-
-    });
+    };
 
 </script>
 

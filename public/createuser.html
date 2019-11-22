@@ -15,12 +15,13 @@
     <main>
         <section>
             <h1 class="heading">Create your account</h1>
+            <p id="errorMsg" class="error"></p>
             <div class="form">
-                <p>Username</p>
+                <p>Username *</p>
                 <input type="text" id="inpUsername" placeholder="username">
-                <p>Password</p>
+                <p>Password *</p>
                 <input type="password" id="inpPwrd" placeholder="password">
-                <p>E-mail address</p>
+                <p>E-mail address *</p>
                 <input type="email" id="inpEmail" placeholder="email">
                 <br>
                 <br>
@@ -36,34 +37,45 @@
     let inpUserame = document.getElementById('inpUsername');
     let inpEmail = document.getElementById('inpEmail');
     let inpPassword = document.getElementById('inpPwrd');
+    let errorMsg = document.getElementById("errorMsg");
 
     let btnCreate = document.getElementById('createuserBtn');
-    
+
 
     btnCreate.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/createuser";
+        if (inpUserame.value && inpPassword.value && inpEmail.value) {
 
-        let updata = {
-            username: inpUsername.value,
-            password: inpPassword.value,
-            email: inpEmail.value
+            let url = "http://localhost:3000/createuser";
+
+            let updata = {
+                username: inpUsername.value,
+                password: inpPassword.value,
+                email: inpEmail.value
+            }
+
+            let cfg = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                var resp = await fetch(url, cfg);
+                var data = await resp.json();
+                console.log(data);
+                sessionStorage.setItem("auth", JSON.stringify(data));
+            }
+            catch (err) {
+                console.log(err);
+            }
+
+        } else {
+            
+            errorMsg.innerText = "All fields must be filled in";
+            errorMsg.classList.add("error");
         }
 
-        let cfg = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updata)
-        }
-
-        try {
-            var resp = await fetch(url, cfg);
-            var data = await resp.json();
-            console.log(data);
-        }
-        catch (err) {
-            console.log(err);
-        }
     });
 
 </script>

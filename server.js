@@ -24,6 +24,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use('/user', userAuth);
 app.use('/editor', userAuth);
+app.use('/edititem', userAuth);
 app.use('/profileinfo', userAuth);
 
 //function used for protecting endpoints ---------
@@ -239,6 +240,30 @@ app.delete('/editor', async function (req, res) {
     }
 });
 
+// --- PUT endpoint EDITOR --------------------------------------------------
+
+app.put('/editor', async function (req, res) {
+
+    let updata = req.body;
+
+    let sql = 'UPDATE items SET done = $1 WHERE id = $2 RETURNING *';
+    let values = [updata.done, updata.itemid];
+
+    try {
+        let result = await pool.query(sql, values);
+
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows);
+        }
+        else {
+            throw "insert failed";
+        }
+    }
+    catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
 // ---- ENDPOINTS FOR EDIT ITEM ------------------
 // ---- GET - item descriptions ------------------
 
@@ -294,55 +319,64 @@ app.put('/edititem', async function (req, res) {
 
 app.post('/createuser', async function (req, res) {
 
-    let updata = req.body; //the data sent from the client
+    let updata = req.body;
 
     let hash = bcrypt.hashSync(updata.password, 10);
 
-    let sql = 'INSERT INTO users (id, username, password, email ) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
-    let values = [updata.username, hash, updata.email];
+    let sql = 'INSERT INTO users (id, password, email, username) VALUES(DEFAULT, $1, $2, $3) RETURNING *';
+    let values = [hash, updata.email, updata.username];
 
     try {
         let result = await pool.query(sql, values);
-        let idUser = result.row[0].id;
 
         if (result.rows.length > 0) {
-            res.status(200).json({ msg: "Insert OK", body: updata, result: result, userid: idUser });
+            let payload = { userid: result.rows[0].id };
+            let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
+            res.status(200).json({
+                email: result.rows[0].email, 
+                userid: result.rows[0].id, 
+                username: result.rows[0].username, 
+                token: tok });
         }
         else {
-            throw "Insert failed";
+            throw "Failed to create user";
         }
 
     }
     catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: err, msg: "could not create new user" });
     }
 });
 
 
-
 // ---- HOME INDEX -  POST endpoint --------------------
 
-app.post('/', async function (req, res) {
+app.post('/auth', async function (req, res) {
 
     let updata = req.body;
 
-    let sql = 'SELECT * FROM users WHERE username = $1';                              // hent alt hvor brukernavnet er updata.username.
+    let sql = 'SELECT * FROM users WHERE username = $1';
     let values = [updata.username];
 
     try {
         let result = await pool.query(sql, values)
 
-        if (result.rows.length == 0) {                                                   // om ingen bruker er registrert med dette brukernavnet vil result være null
-            res.status(400).json({ msg: "User doesn´t exist" });
+        if (result.rows.length == 0) {
+            res.status(404).json({ msg: "user do not exist" });
         }
-        else {                                                                              // hvis det eksisterer så sjekk passordet: 
-            let check = bcrypt.compareSync(updata.password, result.rows[0].password);       //Hvilken possisjon er passordet å i resultatet??
-            if (check == true) {                                                            // hvis det er samme passord som på DB
-                let payload = { userid: result.rows[0].id };                                //lag en payload som du må ha med til brukersiden
-                let tok = jwt.sign(payload, secret, { expiresIn: "12h" });                  // lag en token som gjør at brukeren forblir pålogget
-                res.status(200).json({ email: result.rows[0].email, userid: result.rows[0].id, username: result.rows[0].username, token: tok }); // send alt til clienten
+        else {
+            let check = bcrypt.compareSync(updata.password, result.rows[0].password);
+            if (check == true) {
+                let payload = { userid: result.rows[0].id };
+                let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
+                res.status(200).json({
+                    email: result.rows[0].email,
+                    userid: result.rows[0].id,
+                    username: result.rows[0].username,
+                    token: tok
+                });
             } else {
-                res.status(400).json({ msg: "wrong password" });                            // SPØRSMÅL!! hvorfor lage payload? hvor blir payload overført til client? id og email overfører vi jo i res ???
+                res.status(401).json({ msg: "wrong password" });
             }
         }
     }

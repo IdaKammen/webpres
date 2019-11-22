@@ -32,8 +32,6 @@
 
 <script>
 
-    // OPPDATERE LISTE TITLE! 
-
     let createBtn = document.getElementById("createBtn");
     let titleInp = document.getElementById("titleInput");
 
@@ -59,40 +57,48 @@
 
     createBtn.addEventListener('click', async function (evt) {
 
-        // MÅ SJEKKE OM TITEL ER SKREVET FØRST! HVIS IKKE SÅ MÅ DET IKKE SENDES TIL DB
+        if (titleInp.value) {
 
-        let url = "http://localhost:3000/user";
+            titleInp.classList = "input";
 
-        let auth = JSON.parse(sessionStorage.getItem('auth'));
-        let token = auth.token;
+            let url = "http://localhost:3000/user";
 
-        let updata = {
-            title: titleInp.value,
-            public: false,
-            userid: auth.userid
-        }
+            let auth = JSON.parse(sessionStorage.getItem('auth'));
+            let token = auth.token;
 
-        let cfg = {
-            method: "POST",
-            headers: {
-                "authorization": token,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(updata)
-        }
+            let updata = {
+                title: titleInp.value,
+                public: false,
+                userid: auth.userid
+            }
 
-        try {
-            var resp = await fetch(url, cfg);
-            var data = await resp.json();
+            let cfg = {
+                method: "POST",
+                headers: {
+                    "authorization": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updata)
+            }
 
-            if (resp.status > 202) {
-                throw (data);
-            };
+            try {
+                var resp = await fetch(url, cfg);
+                var data = await resp.json();
+                titleInp.value = "";
 
-            loadList();
-        }
-        catch (err) {
-            console.log(err);
+                if (resp.status > 202) {
+                    throw (data);
+                };
+
+                loadList();
+            }
+            catch (err) {
+                console.log(err);
+            }
+        } else {
+
+            titleInp.classList.add("noInp");
+
         }
     });
 
@@ -107,17 +113,17 @@
 
             let cfg = {
                 method: "GET",
-                headers: { "authorization": token } 
+                headers: { "authorization": token }
             };
 
             var resp = await fetch(url, cfg);
             var data = await resp.json();
 
-            if (resp.status > 202) {    
+            if (resp.status > 202) {
                 throw (data);
             }
 
-            container.innerHTML = ""; 
+            container.innerHTML = "";
 
             for (let value of data) {
                 let listDiv = document.createElement("div");
