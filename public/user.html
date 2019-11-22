@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <link rel="stylesheet" type="text/css" href="css/user.css" />
+    <link rel="stylesheet" type="text/css" href="css/createuser.css" />
     <title>Userprofile</title>
 </head>
 
@@ -28,6 +29,7 @@
             <div id="container"></div>
         </div>
     </main>
+
     <div id="myModal" class="modal">
     
         
@@ -55,17 +57,29 @@
 
 <script>
 
+
+
+let modal = document.getElementById("myModal");
+let modalBtn = document.getElementById("editProfileBtn");
+// Få X til å lukke modalen skal dukke opp 
+let span = document.getElementsByClassName("close")[0];
+    
+    // Når knappen "create user" trykkes på åpner modal 
+ modalBtn.onclick = function() {
+ modal.style.display = "block";
+}
+    
+    // Når man trykker på X-knappen går modal vekk og vi er tilbake 
+ span.onclick = function() {
+ modal.style.display = "none";
+}
+
     // OPPDATERE LISTE TITLE! 
 
     let createBtn = document.getElementById("createBtn");
     let titleInp = document.getElementById("titleInput");
 
-    let editProfileBtn = document.getElementById("editProfileBtn");
-    editProfileBtn.addEventListener('click', function (evt) {
-        window.location.href = "profileinfo.html";
-        // må få opp modal, TOM jobber med det
-    });
-
+    
     let logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener('click', function (evt) {
         sessionStorage.clear();
