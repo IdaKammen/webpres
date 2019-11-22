@@ -9,23 +9,40 @@
 </head>
 
 <body>
-    <p class="logo">List it</p>
+    <main>
+        <p class="logo">List it</p>
+        <div class="list">
+            <button class="menyBtn" id="backBtn">Back</button>
+            <br>
+            <div id="title" class="listTitle"></div>
+            <br>
+            <input class="input" type="text" id="titleInp" placeholder="new title">
+            <button id="titleBtn" class="underMeny">change title</button>
+            <br>
+            <br>
+            <input class="inputItem" type="text" id="inpItem" placeholder="Task">
+            <input class="inputDesc" type="text" id="inpDesc" placeholder="Description">
+            <input class="inputDate" type="date" id="inpDate">
+            <button id="addBtn" class="underMeny">add task</button>
+            <br><br>
+            <div id="container"></div>
+        </div>
+    </main>
 
-    <div class="list">
-        <button class="menyBtn" id="backBtn">Back</button>
+    <div id="myModal" class="modal">
+        <div class="innerForm" id="myForm2">
+        <span class="close">&times;</span>
+        <h1 class="heading edittask" id="heading">Edit task</h1>
+        <p id="item"></p>
+        <input type="text" id="inpItem2" class="modalInp" placeholder="New task">
+        <p id="desc"></p>
+        <input type="text" id="inpDesc2" class="modalInp" placeholder="New description">
+        <p id="date"></p>
+        <input type="date" id="inpDate2" class="inputDate modalInp">
         <br>
-        <div id="title" class="listTitle"></div>
         <br>
-        <input class="input" type="text" id="titleInp" placeholder="new title">
-        <button id="titleBtn" class="underMeny">change title</button>
-        <br>
-        <br>
-        <input class="inputItem" type="text" id="inpItem" placeholder="Task">
-        <input class="inputDesc" type="text" id="inpDesc" placeholder="Description">
-        <input class="inputDate" type="date" id="inpDate">
-        <button id="addBtn" class="underMeny">add task</button>
-        <br><br>
-        <div id="container"></div>
+        <button class="updateBtn" id="updateBtn">Update task</button>
+        </div>
     </div>
 </body>
 
@@ -36,15 +53,34 @@
 
     let title = document.getElementById("title");
     let titleInp = document.getElementById("titleInp");
+    let titleBtn = document.getElementById("titleBtn");
     let inpItem = document.getElementById("inpItem");
     let inpDesc = document.getElementById("inpDesc");
     let inpDate = document.getElementById("inpDate");
-    let titleBtn = document.getElementById("titleBtn");
     let backBtn = document.getElementById("backBtn");
+
+    let modal = document.getElementById("myModal");
+    modal.style.display = "none";
+
+    let inpItem2 = document.getElementById('inpItem2');
+    let inpDesc2 = document.getElementById('inpDesc2');
+    let inpDate2 = document.getElementById('inpDate2');
+
+    let item = document.getElementById('item');
+    let desc = document.getElementById('desc');
+    let newDate = document.getElementById('date');
+
+    let updateBtn = document.getElementById('updateBtn');
+
+    let span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
 
     let listID = sessionStorage.getItem('listId');
     let listTitle = sessionStorage.getItem('listTitle');
-    // setter title fra storage til list title. 
+
     title.innerText = listTitle;
 
     titleBtn.addEventListener('click', async function (evt) {
@@ -125,8 +161,6 @@
 
             container.innerHTML = "";
 
-            console.log(data);
-
             for (let value of data) {
 
                 let listDiv = document.createElement("div");
@@ -160,29 +194,26 @@
                 };
 
                 checkBox.addEventListener('change', function (evt) {
-                    console.log("inne i check event " + value.done + value.id)
                     doneTagging(value.done, value.id);
                 });
 
-
-
                 let br = document.createElement("br");
-                let hr = document.createElement("hr");
+                
 
                 let deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Delete";
                 deleteBtn.classList.add("listBtn");
                 deleteBtn.addEventListener('click', function (evt) {
                     deleteItem(value.id);
-                    console.log("inni eventlistener i deleteBtn " + value.id);
                 });
 
                 let editBtn = document.createElement("button");
                 editBtn.textContent = "Edit";
                 editBtn.classList.add("listBtn");
                 editBtn.addEventListener('click', function (evt) {
-                    window.location.href = "edititem.html";
+                    modal.style.display = "block";
                     sessionStorage.setItem('itemid', value.id);
+                    loadData();
                 });
 
                 listDiv.appendChild(checkBox);
@@ -194,7 +225,7 @@
                 listDiv.appendChild(date);
 
                 container.appendChild(listDiv);
-                container.appendChild(hr);
+                
             }
         }
         catch (err) {
@@ -202,8 +233,6 @@
         }
     };
 
-
-    // Hver gang en list item legges til/lages så legges den opp i tabellen på DB.! Da trenger man ikke Save btn?
 
     addBtn.addEventListener('click', async function (evt) {
 
@@ -270,7 +299,7 @@
             itemid: id
         };
 
-        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
         let token = auth.token;
 
         let cfg = {
@@ -286,8 +315,7 @@
             let resp = await fetch(url, cfg);
             var data = await resp.json();
 
-            console.log("resp data sendt tilbake " + data);
-            if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
+            if (resp.status > 202) {
                 throw (data);
             };
 
@@ -304,8 +332,6 @@
 
         let auth = JSON.parse(sessionStorage.getItem("auth"));
         let token = auth.token;
-
-        console.log("updata inne i delete Item " + updata);
 
         let cfg = {
             method: "DELETE",
@@ -324,6 +350,114 @@
             };
 
             loadList();
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+    // ---- code for modal ---------------------------
+
+    async function loadData() {
+
+        let url = "http://localhost:3000/edititem";
+
+        let itemID = sessionStorage.getItem('itemid');
+
+        try {
+            let auth = JSON.parse(sessionStorage.getItem('auth'));
+            let token = auth.token;
+
+            let cfg = {
+                method: "GET",
+                headers: { "authorization": token }
+            };
+
+            var resp = await fetch(url + "?itemid=" + itemID, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            let task = data[0].item;
+            let descr = data[0].description;
+            let longDate = data[0].date;
+            let shortDate = data[0].date.toString().split('T')[0];
+
+            item.innerText = "Task: " + task;
+            desc.innerText = "Desc: " + descr;
+            newDate.innerText = "Due date: " + shortDate;
+
+            updateBtn.addEventListener('click', async function (evt) {
+                editItem(task, descr, longDate);
+            });
+
+        }
+
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+    async function editItem(item, desc, date) {
+
+        console.log("inni edit item funk");
+        let itemID = sessionStorage.getItem('itemid');
+
+        let url = "http://localhost:3000/edititem";
+
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
+        let token = auth.token;
+
+        let newTask;
+        let newDesc;
+        let dueDate;
+
+        if (inpItem2.value) {
+            newTask = inpItem2.value;
+        } else {
+            newTask = item;
+        };
+
+        if (inpDesc2.value) {
+            newDesc = inpDesc2.value;
+        } else {
+            newDesc = desc;
+        };
+
+        if (inpDate2.value) {
+            dueDate = inpDate2.value;
+        } else {
+            dueDate = date;
+        };
+
+        let updata = {
+            item: newTask,
+            description: newDesc,
+            duedate: dueDate,
+            listid: itemID,
+            userid: auth.userid
+        }
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            loadData();
         }
         catch (err) {
             console.log(err);
