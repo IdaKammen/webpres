@@ -13,6 +13,11 @@
         font-size: 18px;
         }
 
+    .createUser2{
+      width: 100%;
+      font-size: 18px; 
+    }
+
     .modal {
         display: none; 
         position: fixed; 
