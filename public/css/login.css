@@ -1,64 +1,35 @@
 .form {
-    background-color: #ededed;
     border-radius: 5px;
-    background-color: #f2f2f2;
-<<<<<<< HEAD
-    padding: 15px;
-    width: 400px;
+    background-color:#f2f2f2;
+    padding: 1% 4% 3% 4%;
+    width: 380px;
     margin-left: auto;
     margin-right: auto;
-=======
-    padding: 20px;
-    width: 450px;
-    margin-left: auto ;
-    margin-right: auto ;
-    margin-top: 50px ;
-    font-family: 'Verdana', sans-serif;
->>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
    }
 
    .logIn {
     width: 50%;
     font-size: 16pt;
     }
-<<<<<<< HEAD
+
     .createuser{
     width: 125px;
     font-size: 12pt;
-    margin-left: 20px;
+    margin-left: 10%;
     }
-=======
-    .createUser{
-    width: 45%;
-    
-    font-size: 18px;
-}
->>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
 
-    .color {
-        text-align: center;
-        font-size: 50px;
-        color: #59918b;
-    }
     .listitlogo {
-        top: 150px;
+        top: 30pt;
         font-style: bold;
-<<<<<<< HEAD
-        font-size: 30pt;
-=======
-        color: #59918b;
-        font-size: 70px;
->>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
+        font-size: 40pt;
         text-align: center;
+        color: #59918b;
        
      }
      
      .pText {
-         font-size: 12px;
-<<<<<<< HEAD
+         font-size: 9pt;
          text-align: center;
+         margin-bottom: 5%;
      }
      
-=======
-     }
->>>>>>> c7e5c0c66b77756010436cfd948c4ec3cba43cd4
