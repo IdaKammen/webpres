@@ -14,7 +14,7 @@
     <main>
         <section>
             <div class="form" id="myForm">
-                <h2 style="text-align:center" ;>Log in</h2>
+                <h2 style="text-align:center";>Log in</h2>
                 <p>Username</p>
                 <input type="text" id="inpUsername" placeholder="Enter Username">
                 <p>Password</p>
@@ -29,20 +29,19 @@
     </main>
 
     <div id="myModal" class="modal">
-        <div class="modal-content">
-            <div class="form" id="myForm2">
-                <span class="close">&times;</span>
-                <h2 style="text-align:center;">Create user</h2>
-                <p style>Username</p>
-                <input type="text" id="inpUsername2" placeholder="Enter Username">
-                <p>Password</p>
-                <input type="password" id="inpPwrd2" placeholder="Enter Password">
-                <p>E-mail</p>
-                <input type="email" id="inpEmail" placeholder="Enter E-mail">
-                </br>
-                </br>
-                <button class="createUser" id="createUserBtn">Create user </button>
-            </div>
+        <div class="innerForm" id="myForm2">
+            <span class="close">&times;</span>
+            <h1 style="text-align:center;">Create user</h1>
+            <p id="errorMsg" class="error"></p>
+            <p style>Username</p>
+            <input type="text" id="inpUsername2" placeholder="Enter Username">
+            <p>Password</p>
+            <input type="password" id="inpPwrd2" placeholder="Enter Password">
+            <p>E-mail</p>
+            <input type="email" id="inpEmail" placeholder="Enter E-mail">
+            </br>
+            </br>
+            <button class="createUser" id="createUserBtn">Submit</button>
         </div>
     </div>
 </body>
@@ -53,28 +52,41 @@
     let inpPwrd = document.getElementById('inpPwrd');
     let modal = document.getElementById("myModal");
 
+    let inpUserame2 = document.getElementById('inpUsername2');
+    let inpEmail = document.getElementById('inpEmail');
+    let inpPassword2 = document.getElementById('inpPwrd2');
+    let errorMsg = document.getElementById("errorMsg");
 
     let logInBtn = document.getElementById('logInBtn');
     let createUserBtn = document.getElementById('createUserBtn');
     let modalBtn = document.getElementById("createUserModalBtn");
 
-
-    // Få X til å lukke modal skal dukke opp 
     let span = document.getElementsByClassName("close")[0];
 
-    // Når knappen "create user" trykkes på åpner modal 
     modalBtn.onclick = function () {
         modal.style.display = "block";
     }
 
-    // Når man trykker på X-knappen går modal vekk og vi er tilbake på login
     span.onclick = function () {
         modal.style.display = "none";
+        errorMsg.innerText = "";
     }
+
+    let url;
 
     logInBtn.addEventListener('click', async function (evt) {
 
-        let url = "http://localhost:3000/auth";
+        if(window.location.hostname == "localhost"){
+            url = "https://localhost:3000" + "/auth";
+        } else {
+            url = window.location.hostname + "/auth";
+        };
+
+        //let url = "http://localhost:3000/auth"
+
+        //let url = "https://" + window.location.hostname + ":3000/auth";
+
+        console.log(url);
 
         let updata = {
             username: inpUsername.value,
@@ -90,7 +102,7 @@
             let resp = await fetch(url, cfg);
             let data = await resp.json();
 
-           if (resp.status === 404) {
+            if (resp.status === 404) {
                 inpUsername.classList.add("noInp");
             } else if (resp.status === 401) {
                 inpPwrd.classList.add("noInp");
@@ -98,10 +110,48 @@
                 throw (data);
             };
             sessionStorage.setItem("auth", JSON.stringify(data));
+            location.href = "user.html";
         }
         catch (err) {
             console.log(err);
         }
+    });
+
+    createUserBtn.addEventListener('click', async function (evt) {
+
+        if (inpUsername2.value && inpPassword2.value && inpEmail.value) {
+
+            let url = "http://localhost:3000/createuser";
+
+            let updata = {
+                username: inpUsername2.value,
+                password: inpPassword2.value,
+                email: inpEmail.value
+            }
+
+            let cfg = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                var resp = await fetch(url, cfg);
+                var data = await resp.json();
+                console.log(data);
+                sessionStorage.setItem("auth", JSON.stringify(data));
+                location.href = "user.html";
+            }
+            catch (err) {
+                console.log(err);
+            }
+
+        } else {
+
+            errorMsg.innerText = "All fields are required to create profile";
+            errorMsg.classList.add("error");
+        }
+
     });
 
 </script>
