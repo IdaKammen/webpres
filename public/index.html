@@ -23,9 +23,11 @@
                 <br>
                 <p class="pText">Do you not have a user yet? Click 'create user' to make one!</p>
                 <button class="logIn" id="logInBtn">Log In </button>
-                <button class="createuser" id="createUserModalBtn"> create user</button>
+
+                <button class="createuser" id="createUserModalBtn">create user</button>
             </div>
         </section>
+        <div class="wrapper"><button class="publicBtn" id="publicBtn">- View public lists -</button></div>
     </main>
 
     <div id="myModal" class="modal">
@@ -50,23 +52,26 @@
 
     let inpUsername = document.getElementById('inpUsername');
     let inpPwrd = document.getElementById('inpPwrd');
-    let modal = document.getElementById("myModal");
+    let logInBtn = document.getElementById('logInBtn');
+    let createUserBtn = document.getElementById('createUserBtn');
 
+    let publicBtn = document.getElementById("publicBtn");
+    publicBtn.addEventListener('click', function (evt) {
+        window.location.href = "public.html";
+    }); 
+    
     let inpUserame2 = document.getElementById('inpUsername2');
     let inpEmail = document.getElementById('inpEmail');
     let inpPassword2 = document.getElementById('inpPwrd2');
     let errorMsg = document.getElementById("errorMsg");
 
-    let logInBtn = document.getElementById('logInBtn');
-    let createUserBtn = document.getElementById('createUserBtn');
+    let modal = document.getElementById("myModal");
     let modalBtn = document.getElementById("createUserModalBtn");
-
-    let span = document.getElementsByClassName("close")[0];
-
     modalBtn.onclick = function () {
         modal.style.display = "block";
     }
 
+    let span = document.getElementsByClassName("close")[0];
     span.onclick = function () {
         modal.style.display = "none";
         errorMsg.innerText = "";
@@ -77,23 +82,22 @@
     logInBtn.addEventListener('click', async function (evt) {
 
         if (window.location.hostname == "localhost") {
-            url = "https://localhost:3000" + "/auth";
+            url = "http://localhost:3000" + "/auth";
         } else {
             url = window.location.hostname + "/auth";
         };
 
-        console.log(url);
-
         let updata = {
             username: inpUsername.value,
             password: inpPwrd.value
-
         }
+
         let cfg = {
             method: "POST",
             headers: { "Content-type": "application/json" },
             body: JSON.stringify(updata)
         }
+
         try {
             let resp = await fetch(url, cfg);
             let data = await resp.json();
@@ -113,45 +117,55 @@
         }
     });
 
+
     createUserBtn.addEventListener('click', async function (evt) {
 
         if (inpUsername2.value && inpPassword2.value && inpEmail.value) {
 
-            if (window.location.hostname == "localhost") {
-                url = "https://localhost:3000" + "/createuser";
+            let email = inpEmail.value;
+            let regX = /^[^\s]+@[^\s]+\.[a-zA-Z]{2,5}$/;
+            let match = regX.test(email);
+
+            if (match == true) {
+
+                if (window.location.hostname == "localhost") {
+                    url = "http://localhost:3000" + "/createuser";
+                } else {
+                    url = window.location.hostname + "/createuser";
+                }
+
+                let updata = {
+                    username: inpUsername2.value,
+                    password: inpPassword2.value,
+                    email: inpEmail.value
+                }
+
+                let cfg = {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updata)
+                }
+
+                try {
+                    var resp = await fetch(url, cfg);
+                    var data = await resp.json();
+
+                    sessionStorage.setItem("auth", JSON.stringify(data));
+                    location.href = "user.html";
+                }
+                catch (err) {
+                    console.log(err);
+                }
+
             } else {
-                url = window.location.hostname + "/createuser";
-            };
-
-            let updata = {
-                username: inpUsername2.value,
-                password: inpPassword2.value,
-                email: inpEmail.value
-            }
-
-            let cfg = {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updata)
-            }
-
-            try {
-                var resp = await fetch(url, cfg);
-                var data = await resp.json();
-                console.log(data);
-                sessionStorage.setItem("auth", JSON.stringify(data));
-                location.href = "user.html";
-            }
-            catch (err) {
-                console.log(err);
+                errorMsg.innerText = "not a valid email address";
+                errorMsg.classList.add("error");
             }
 
         } else {
-
             errorMsg.innerText = "All fields are required to create profile";
             errorMsg.classList.add("error");
         }
-
     });
 
 </script>
