@@ -1,5 +1,11 @@
-.list {
-    margin-left: 100px;
+ .text {
+   font-size: 14pt;
+   margin-bottom: 7px;
+   margin-top: 15px;
+}
+
+  .list {
+    margin-left: 7.5%;
   }
 
   .hovedDiv {
@@ -19,7 +25,63 @@
     margin-left: 20px;
     display: inline-block;
   }
-  
+
+  .modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.6); 
+  }
+
+  .innerForm {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 3% 4% 3% 4%;
+    width: 550px;
+    margin-top: 10%;
+    margin-left: auto ;
+    margin-right: auto ;
+  }
+
+  .close {
+      color: #000000;
+      float: right;
+      margin-top: -10px; 
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .close:hover,
+    .close:focus {
+        color: #59918b;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+  .updateBTN {
+    width: 50%;
+    font-size: 12pt;
+    margin-top: 12px;
+    margin-bottom: 18px;
+    font-size: 18px;
+    margin-right: 15%;
+    }
+
+  .deletuser{
+      width: 30%;
+      font-size: 9pt;
+      display: inline-block;
+      }
+    
+  .profileheding {
+      font-size: 30pt; 
+  }
+
   .listBtn {
     background-color: #e7e7e7;
     font-size: 10pt;
@@ -37,22 +99,8 @@
     vertical-align: middle;
     width: 20px;
     height: 20px;
-    background-color: #e7e7e7;
-    border: 1px solid #cdcfcf;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
     position: relative;
   }
-
-  .checkBox:checked {
-    content: "\2713";
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
-    font-size: 16px;
-    font-weight: 600;
-    color: #000000;
-    text-align: center;
-    background-color: #59918b;
-    }
-  
   
   .listDiv{
     width: 1fr;
@@ -60,10 +108,13 @@
   }
   
   .listItem {
-    margin-right: 20px;
-    width: 300px;
+    margin-bottom: 20px;
+    color: black;
+    width: 40%;
     font-size: 16pt;
     display: inline-block;
+    overflow-y: auto;
+    max-height: 500px;
   }
 
   .listItem:hover {
@@ -72,14 +123,73 @@
     color:  #267970;
   }
   
-
   .input {
-    width: 200px;
+    width: 20%;
     height: 30px;
   }
-
+  
   p {
     display: inline-block;
     font-size: 10pt;
   }
+
+  .error {
+    color: red; 
+    font-style: oblique;
+    text-align: center;
+  }
+
+  .itemDiv {
+    margin-bottom: 20px;
+  }
+
+  #taskItems {
+    overflow-y: auto;
+    max-height: 500px;
+  }
+  span {
+    font-size: 10pt;
+  }
+
+  .publicItem {
+
+    font-size: 18pt;
+    color: #267970
+    
+  }
+
+  @media only screen and (max-width: 600px){
+
+    .input {
+      width: 50%;
+    }
+
+    .heading {
+      font-size: 30pt;
+    }
+
+    .heading2 {
+      font-size: 15pt;
+    }
+
+    .listItem {
+      font-size: 14pt;
+      width: 60%;
+    }
+
+    .publicItem {
+      font-size: 14pt;
+    }
+    
+    .innerForm {
+      padding: 2% 3% 2% 3%;
+      width: 380px;
+      
+    }
+  }
+
+
   
+  
+
+ 

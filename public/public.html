@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <link rel="stylesheet" type="text/css" href="css/user.css" />
-    <title>public</title>
+    <title>Public</title>
 </head>
 
 <body>
@@ -23,13 +23,41 @@
             <div id="container"></div>
         </div>
     </main>
+
+    <div id="myModal" class="modal">
+        <div class="innerForm" id="myForm2">
+            <span class="close">&times;</span>
+            <h1 class="heading2" id="heading"></h1>
+            <div id="taskItems"></div>
+        </div>
+    </div>
 </body>
 
-<script> 
+<script>
 
+    let modal = document.getElementById("myModal");
+    modal.style.display = "none";
+
+    let span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    let backBtn = document.getElementById("backBtn");
+    backBtn.addEventListener('click', function (evt) {
+        window.location.href = "index.html";
+    });
+
+    let heading = document.getElementById("heading");
+    let taskItems = document.getElementById("taskItems");
     let container = document.getElementById("container");
 
-    let url = "http://localhost:3000/public";
+    let url;
+    if (window.location.hostname == "localhost") {
+        url = "http://localhost:3000" + "/public";
+    } else {
+        url = window.location.hostname + "/public";
+    };
 
     loadList();
 
@@ -60,21 +88,70 @@
                 let html = `<li>${value.title}</li>`;
                 listTitle.innerHTML = html;
 
-                let showBtn = document.createElement("button");
-                showBtn.innerHTML = "View list";
-                showBtn.classList.add("listBtn");
-                showBtn.addEventListener('click', function (evt) {
+                listTitle.addEventListener('click', function (evt) {
+                    heading.innerText = value.title;
+                    modal.style.display = "block";
                     sessionStorage.setItem("listId", value.id);
-                    sessionStorage.setItem("listTitle", value.title);
-                    // må åpne modal med list items, enda en get request
+                    loadListitems(value.id);
                 });
 
                 listDiv.appendChild(listTitle);
-                listDiv.appendChild(showBtn);
-
                 container.appendChild(listDiv);
             }
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
 
+    async function loadListitems(id) {
+
+        if (window.location.hostname == "localhost") {
+            url = "http://localhost:3000" + "/listitems";
+        } else {
+            url = window.location.hostname + "/listitems";
+        };
+
+        let listID = id;
+
+        try {
+            let cfg = {
+                method: "GET",
+            };
+
+            var resp = await fetch(url + "?listid=" + listID, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            taskItems.innerHTML = "";
+
+            for (let value of data) {
+
+                let itemDiv = document.createElement("div");
+                itemDiv.classList.add("itemDiv");
+
+                let listItem = document.createElement("li");
+                listItem.classList.add("publicItem");
+                listItem.innerHTML = value.item;
+
+                let itemDesc = document.createElement("span");
+                itemDesc.innerHTML = "Description: " + value.description;
+
+                let br = document.createElement("br");
+
+                let itemDate = document.createElement("span");
+                itemDate.innerHTML = "Due date: " + value.date.toString().split('T')[0];;
+
+                itemDiv.appendChild(listItem);
+                itemDiv.appendChild(itemDesc);
+                itemDiv.appendChild(br);
+                itemDiv.appendChild(itemDate);
+
+                taskItems.appendChild(itemDiv);
+            }
         }
         catch (err) {
             console.log(err);

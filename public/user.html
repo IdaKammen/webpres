@@ -22,85 +22,81 @@
             <button class="menyBtn" id="createBtn">Create new list</button>
             <br>
             <span class="title" id="title">My lists </span>
-            <div class="username" id="username"></div>
             <br><br>
-            <span>&#10003;</span>
             <div id="container"></div>
         </div>
     </main>
+
+    <div id="myModal" class="modal">
+
+        <div class="modal-content">
+            <div class="innerForm" id="myForm2">
+                <span class="close">&times;</span>
+                <h1 class="heading profileheding">Profile information</h1>
+                <p class="text" id="username2">Username</p>
+                <input type="text" id="inpUsername" placeholder=" New username">
+                <p class="text" id="email">E-mail address</p>
+                <p id="errorMsg" class="error"></p>
+                <input type="email" id="inpEmail" placeholder="New email">
+                <br>
+                <button class="updateBTN" id="updateBtn">Update info</button>
+                <br>
+                <p class="text" id="psw">Create new password</p>
+                <input type="text" id="inpPSW" placeholder=" New password">
+                <br>
+                <button class="updateBTN" id="updatePSW">Change password</button>
+                <button class="deletuser" id="deleteUser">Delete useraccount</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 <script>
-
     let createBtn = document.getElementById("createBtn");
     let titleInp = document.getElementById("titleInput");
-
-    let editProfileBtn = document.getElementById("editProfileBtn");
-    editProfileBtn.addEventListener('click', function (evt) {
-        window.location.href = "profileinfo.html";
-        // må få opp modal, TOM jobber med det
-    });
-
     let logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener('click', function (evt) {
         sessionStorage.clear();
         window.location.href = "index.html";
     });
 
+    let inpUsername = document.getElementById('inpUsername');
+    let inpEmail = document.getElementById('inpEmail');
+    let errorMsg = document.getElementById("errorMsg");
+    let inpPSW = document.getElementById('inpPSW');
     let container = document.getElementById("container");
 
-    let url = "http://localhost:3000/user";
-
     let userData = JSON.parse(sessionStorage.getItem("auth"));
-    let username = document.getElementById("username");
-    username.innerHTML = "Logged in as: " + userData.username;
+    sessionStorage.setItem("username", JSON.stringify(userData.username));
+    sessionStorage.setItem("email", JSON.stringify(userData.email));
 
-    createBtn.addEventListener('click', async function (evt) {
+    let username2 = document.getElementById('username2');
+    let psw = document.getElementById('psw');
+    let email = document.getElementById('email');
+    let updateBtn = document.getElementById('updateBtn');
+    let updatePSW = document.getElementById('updatePSW');
 
-        if (titleInp.value) {
+    let deleteUSER = document.getElementById("deleteUser");
 
-            titleInp.classList = "input";
+    let modal = document.getElementById("myModal");
+    modal.style.display = "none";
+    let modalBtn = document.getElementById("editProfileBtn");
+    modalBtn.onclick = function () {
+        modal.style.display = "block";
+        loadUser();
+    };
 
-            let url = "http://localhost:3000/user";
+    let span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
 
-            let auth = JSON.parse(sessionStorage.getItem('auth'));
-            let token = auth.token;
-
-            let updata = {
-                title: titleInp.value,
-                public: false,
-                userid: auth.userid
-            }
-
-            let cfg = {
-                method: "POST",
-                headers: {
-                    "authorization": token,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(updata)
-            }
-
-            try {
-                var resp = await fetch(url, cfg);
-                var data = await resp.json();
-                titleInp.value = "";
-
-                if (resp.status > 202) {
-                    throw (data);
-                };
-
-                loadList();
-            }
-            catch (err) {
-                console.log(err);
-            }
-        } else {
-
-            titleInp.classList.add("noInp");
-
-        }
-    });
+    let url;
+    if (window.location.hostname == "localhost") {
+        url = "http://localhost:3000" + "/lists";
+    } else {
+        url = window.location.hostname + "/lists";
+    };
 
     loadList();
 
@@ -121,7 +117,7 @@
 
             if (resp.status > 202) {
                 throw (data);
-            }
+            };
 
             container.innerHTML = "";
 
@@ -173,21 +169,67 @@
 
                 container.appendChild(listDiv);
                 container.appendChild(br);
-
             }
-
         }
         catch (err) {
             console.log(err);
         }
     };
 
-    // ---------------------------------------    
+    createBtn.addEventListener('click', async function (evt) {
+
+        if (titleInp.value) {
+
+            titleInp.classList = "input";
+
+            let url;
+            if (window.location.hostname == "localhost") {
+                url = "http://localhost:3000" + "/lists";
+            } else {
+                url = window.location.hostname + "/lists";
+            };
+
+            let auth = JSON.parse(sessionStorage.getItem('auth'));
+            let token = auth.token;
+
+            let updata = {
+                title: titleInp.value,
+                public: false,
+                userid: auth.userid
+            }
+
+            let cfg = {
+                method: "POST",
+                headers: {
+                    "authorization": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                var resp = await fetch(url, cfg);
+                var data = await resp.json();
+                titleInp.value = "";
+
+                if (resp.status > 202) {
+                    throw (data);
+                };
+                loadList();
+            }
+            catch (err) {
+            }
+        } else {
+            titleInp.classList.add("noInp");
+        }
+    });
+
+
     async function deleteList(id) {
 
         let updata = { listID: id };
 
-        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
         let token = auth.token;
 
         let cfg = {
@@ -201,16 +243,15 @@
 
         try {
             let resp = await fetch(url, cfg);
-            if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
+            if (resp.status > 202) {
                 throw (data);
             };
-
             loadList();
         }
         catch (err) {
             console.log(err);
         }
-    }
+    };
 
     async function publicTagging(state, id) {
 
@@ -225,7 +266,7 @@
             listid: id
         };
 
-        let auth = JSON.parse(sessionStorage.getItem('auth')); // henter token fra sessionStorage for å sende det med
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
         let token = auth.token;
 
         let cfg = {
@@ -241,8 +282,7 @@
             let resp = await fetch(url, cfg);
             var data = await resp.json();
 
-            console.log("resp data sendt tilbake" + data);
-            if (resp.status > 202) {   // hvis responsen har en statuskode som er over 202 er ikke token godkjent og clienten .
+            if (resp.status > 202) {
                 throw (data);
             };
 
@@ -252,6 +292,173 @@
             console.log(err);
         }
     }
+
+
+    function loadUser() {
+
+        let userNAME = JSON.parse(sessionStorage.getItem("username"));
+        let userEMAIL = JSON.parse(sessionStorage.getItem("email"));
+
+        username2.innerText = "Username: " + userNAME;
+        email.innerText = "Email: " + userEMAIL;
+    
+    };
+
+    updateBtn.addEventListener('click', async function (evt) {
+
+        let updataUsername;
+        let updataEmail;
+        let userNameUpdate = JSON.parse(sessionStorage.getItem("username"));
+        let userEmailUpdate = JSON.parse(sessionStorage.getItem("email"));
+
+        if (inpUsername.value) {
+            updataUsername = inpUsername.value;
+            sessionStorage.setItem("username", JSON.stringify(inpUsername.value));
+        } else {
+            updataUsername = userNameUpdate;
+        };
+
+        if (inpEmail.value) {
+
+            let regX = /^[^\s]+@[^\s]+\.[a-zA-Z]{2,5}$/;
+            let match = regX.test(inpEmail.value);
+
+            if (match == true) {
+                updataEmail = inpEmail.value;
+                sessionStorage.setItem("email", JSON.stringify(inpEmail.value));
+                errorMsg.innerText = "";
+
+            } else {
+                updataEmail = userData.email;
+                errorMsg.innerText = "Not a valid email, email not updated";
+                errorMsg.classList.add("error");
+            }
+
+        } else {
+            updataEmail = userEmailUpdate;
+            errorMsg.innerText = "";
+        };
+
+        let url;
+        if (window.location.hostname == "localhost") {
+            url = "http://localhost:3000" + "/profile";
+        } else {
+            url = window.location.hostname + "/profile";
+        };
+
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
+        let token = auth.token;
+
+        let updata = {
+            username: updataUsername,
+            email: updataEmail
+        }
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            loadUser();
+            inpUsername.value = "";
+            inpEmail.value = "";
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+
+    updatePSW.addEventListener('click', async function (evt) {
+
+        let url;
+        if (window.location.hostname == "localhost") {
+            url = "http://localhost:3000" + "/profile/psw";
+        } else {
+            url = window.location.hostname + "/profile/psw";
+        };
+
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
+        let token = auth.token;
+
+        let updata = {
+            password: inpPSW.value,
+        }
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            inpPSW.value = "";
+        }
+        catch (err) {
+            console.log(err);
+        }
+
+    });
+
+    deleteUSER.addEventListener('click', async function (evt) {
+
+        if (confirm('Are you sure you want to delete user?')) {
+
+            let url;
+            if (window.location.hostname == "localhost") {
+                url = "http://localhost:3000" + "/profile";
+            } else {
+                url = window.location.hostname + "/profile";
+            };
+
+            let auth = JSON.parse(sessionStorage.getItem('auth'));
+            let token = auth.token;
+            let updata = { userid: auth.userid };
+
+            let cfg = {
+                method: "DELETE",
+                headers: {
+                    "authorization": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                let resp = await fetch(url, cfg);
+                if (resp.status > 202) {
+                    throw (data);
+                };
+
+                sessionStorage.clear();
+                window.location.href = "index.html";
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }
+    });
 
 </script>
 

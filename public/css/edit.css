@@ -12,6 +12,47 @@
   margin-top: 25px;
 }
 
+.underMeny {
+  width: 8%
+}
+
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.6); 
+}
+
+.innerForm {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 3% 4% 3% 4%;
+  width: 500px;
+  margin-top: 10%;
+  margin-left: auto ;
+  margin-right: auto ;
+}
+
+.close {
+  color: #000000;
+  float: right;
+  margin-top: -10px; 
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #59918b;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .listBtn {
   background-color: #e7e7e7;
   font-size: 10pt;
@@ -25,7 +66,7 @@
 }
 
 .input {
-  width: 15%;
+  width: 20%;
   padding-left: 10px;
 }
 
@@ -38,24 +79,30 @@
   vertical-align: middle;
 }
 
+.modalInp{
+  width: 100%;
+  padding-left: 10px;
+}
+
 .inputItem {
-  width: 15%;
+  width: 18%;
   padding-left: 10px;
 }
 
 .inputDesc {
-  width: 15%;
+  width: 18%;
   padding-left: 10px;
 }
 
 .inputDate {
-  width: 120px;
+  width: 150px;
 }
 
 .listDiv{
   width: 1fr;
   overflow: hidden;
-  margin-top: 5px;
+  margin-top: 2%;;
+  margin-bottom: 2%;
 }
 
 .listItem {
@@ -90,3 +137,78 @@
   #item {
     font-size: 20pt;
   }
+
+  @media only screen and (max-width: 600px){
+
+    .input {
+      width: 50%;
+    }
+
+    .underMeny {
+      width: 22%
+    }
+
+    .listTitle {
+      font-size: 25pt;
+      color: #1a1919;
+      margin-top: 5%;
+    }
+
+    .listDiv {
+      margin-bottom: 5%;
+      margin-top: 5%;
+    }
+
+    .listItem {
+      font-size: 16pt;
+      width: 60%;
+    }
+
+    .inputItem {
+      width: 40%;
+      padding-left: 5px;
+      margin-bottom: 1%;
+    }
+    
+    .inputDesc {
+      width: 40%;
+      padding-left: 5px;
+    }
+  }
+
+  @media only screen and (max-width: 1000px) and (min-width: 600px){
+
+    .input {
+      width: 50%;
+    }
+
+    .underMeny {
+      width: 15%
+    }
+
+    .inputDate {
+      width: 120px;
+    }
+
+    .listTitle {
+      font-size: 25pt;
+      color: #1a1919;
+      margin-top: 5%;
+    }
+
+    .listItem {
+      font-size: 18pt;
+      width: 50%;
+    }
+
+    .inputItem {
+      width: 30%;
+      padding-left: 10px;
+    }
+    
+    .inputDesc {
+      width: 30%;
+      padding-left: 10px;
+    }
+  }
+  

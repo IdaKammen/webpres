@@ -1,23 +1,25 @@
-    .form {
-        background-color: #ededed;
+
+    .innerForm {
         border-radius: 5px;
         background-color: #f2f2f2;
-        padding: 20px;
-        width: 450px;
+        padding: 3% 5% 3% 5%;
+        width: 380px;
+        margin-top: 8%;
         margin-left: auto ;
         margin-right: auto ;
-   }
+    }
 
     .createUser {
         width: 50%;
-        font-size: 18px;
+        font-size: 16pt;
+        margin-left: 25%;
+        margin-top: 5%;
         }
 
     .modal {
         display: none; 
         position: fixed; 
         z-index: 1; 
-        padding-top: 100px; 
         left: 0;
         top: 0;
         width: 100%; 
@@ -26,14 +28,6 @@
         background-color: rgb(0,0,0); 
         background-color: rgba(0,0,0,0.6); 
       }
-      
-      
-    .modal-content {
-        margin: auto;
-        padding: 30px;
-        width: 50%;
-      }
-      
       
     .close {
         color: #000000;
