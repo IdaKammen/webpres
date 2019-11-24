@@ -8,14 +8,17 @@ const authObj = require('./modules/auth')
 
 const app = express();
 
-let secretStash;
+/*let secretStash;
 try {
     secretStash = require("./modules/secrets");
 } catch (error) {
     console.log("not running localy so no secrets to share");
-};
+};*/
 
-const conString = process.env.DATABASE_URL || secretStash.dbURI;
+let dbURI = "postgres://nwzjyqympfxqpv:db64364662d38a5811c438757136f15e8039b264998dcf34d400f4711acad962@ec2-54-217-228-25.eu-west-1.compute.amazonaws.com:5432/dascnumjjf9evv" + "?ssl=true";
+let secret =  "glederMegtilJul!";
+
+const conString = process.env.DATABASE_URL || dbURI;
 const pool = new pg.Pool({ connectionString: conString });
 
 app.use(cors());
@@ -44,7 +47,7 @@ app.post('/createuser', async function (req, res) {
 
         if (result.rows.length > 0) {
             let payload = { userid: result.rows[0].id };
-            let tok = jwt.sign(payload, secretStash.secret, { expiresIn: "12h" });
+            let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
             res.status(200).json({
                 email: result.rows[0].email,
                 userid: result.rows[0].id,
@@ -78,7 +81,7 @@ app.post('/', async function (req, res) {
             let check = bcrypt.compareSync(updata.password, result.rows[0].password);
             if (check == true) {
                 let payload = { userid: result.rows[0].id };
-                let tok = jwt.sign(payload, secretStash.secret, { expiresIn: "12h" });
+                let tok = jwt.sign(payload, secret, { expiresIn: "12h" });
                 res.status(200).json({
                     email: result.rows[0].email,
                     userid: result.rows[0].id,
