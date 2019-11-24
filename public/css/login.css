@@ -12,6 +12,22 @@
     font-size: 16pt;
     }
 
+    .wrapper {
+        text-align: center;
+    }
+    .publicBtn {
+        background-color: #a0bebb;
+        font-size: 12pt;
+        color: rgb(0, 0, 0);
+        padding: 10px 10px 10px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: auto;
+        margin-top: 20px;
+        display:block;
+    }
+
     .createuser{
     width: 125px;
     font-size: 12pt;
