@@ -77,15 +77,11 @@
         errorMsg.innerText = "";
     }
 
-    let url;
 
     logInBtn.addEventListener('click', async function (evt) {
 
-        if (window.location.hostname == "localhost") {
-            url = "http://localhost:3000";
-        } else {
-            url = "https://webpres.herokuapp.com";
-        };
+        let url = "https://webpres.herokuapp.com/";
+        
 
         let updata = {
             username: inpUsername.value,
