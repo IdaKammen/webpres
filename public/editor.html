@@ -92,7 +92,7 @@
     if (window.location.hostname == "localhost") {
         url = "http://localhost:3000" + "/editor";
     } else {
-        url = window.location.hostname + "/editor";
+        url = "https://webpres.herokuapp.com" + "/editor";
     };
 
     titleBtn.addEventListener('click', async function (evt) {
@@ -104,7 +104,7 @@
             if (window.location.hostname == "localhost") {
                 url = "http://localhost:3000" + "/editor/title";
             } else {
-                url = window.location.hostname + "/editor/title";
+                url = "https://webpres.herokuapp.com"+ "/editor/title";
             };
 
             let auth = JSON.parse(sessionStorage.getItem("auth"));
@@ -139,7 +139,6 @@
                 };
             }
             catch (err) {
-                console.log(err);
             }
         } else {
             titleInp.classList.add("noInp");
@@ -251,7 +250,7 @@
             if (window.location.hostname == "localhost") {
                 url = "http://localhost:3000" + "/editor";
             } else {
-                url = window.location.hostname + "/editor";
+                url = "https://webpres.herokuapp.com" + "/editor";
             };
 
             let auth = JSON.parse(sessionStorage.getItem("auth"));
@@ -285,7 +284,6 @@
                 };
             }
             catch (err) {
-                console.log(err);
             }
         } else {
             inpItem.classList.add("noInp");
@@ -329,7 +327,6 @@
             loadList();
         }
         catch (err) {
-            console.log(err);
         }
     };
 
@@ -357,7 +354,6 @@
             loadList();
         }
         catch (err) {
-            console.log(err);
         }
     };
 
@@ -370,7 +366,7 @@
         if (window.location.hostname == "localhost") {
             url = "http://localhost:3000" + "/edititem";
         } else {
-            url = window.location.hostname + "/edititem";
+            url = "https://webpres.herokuapp.com" + "/edititem";
         };
 
         let itemID = sessionStorage.getItem('itemid');
@@ -405,7 +401,6 @@
             });
         }
         catch (err) {
-            console.log(err);
         }
     };
 
@@ -417,7 +412,7 @@
         if (window.location.hostname == "localhost") {
             url = "http://localhost:3000" + "/edititem";
         } else {
-            url = window.location.hostname + "/edititem";
+            url = "https://webpres.herokuapp.com" + "/edititem";
         };
 
         let auth = JSON.parse(sessionStorage.getItem('auth'));
@@ -472,7 +467,6 @@
             loadData();
         }
         catch (err) {
-            console.log(err);
         }
     };
 
