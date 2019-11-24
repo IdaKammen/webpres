@@ -61,7 +61,7 @@ app.post('/createuser', async function (req, res) {
     }
 });
 
-app.post('/auth', async function (req, res) {
+app.post('/', async function (req, res) {
 
     let updata = req.body;
 
