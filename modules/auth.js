@@ -1,5 +1,6 @@
-const secretStash = require("./secrets");
+//const secretStash = require("./secrets");
 const jwt = require('jsonwebtoken');
+let secret =  "glederMegtilJul!";
 
 let authObj = {};
 
@@ -9,7 +10,7 @@ authObj.userAuth = function (req, res, next) {
 
     if (token) {
         try {
-            authObj.auth = jwt.verify(token, secretStash.secret);
+            authObj.auth = jwt.verify(token, secret);
             next();
         } catch (err) {
             console.log(err);
