@@ -22,7 +22,6 @@
             <button class="menyBtn" id="createBtn">Create new list</button>
             <br>
             <span class="title" id="title">My lists </span>
-            <div class="username" id="username"></div>
             <br><br>
             <div id="container"></div>
         </div>
@@ -31,126 +30,73 @@
     <div id="myModal" class="modal">
 
         <div class="modal-content">
-
             <div class="innerForm" id="myForm2">
                 <span class="close">&times;</span>
                 <h1 class="heading profileheding">Profile information</h1>
-                <p id="username2">Username</p>
+                <p class="text" id="username2">Username</p>
                 <input type="text" id="inpUsername" placeholder=" New username">
-                <p id="email">E-mail address</p>
+                <p class="text" id="email">E-mail address</p>
+                <p id="errorMsg" class="error"></p>
                 <input type="email" id="inpEmail" placeholder="New email">
-                <p id="psw">Create new password</p>
-                <input type="password" id="inpNew" placeholder=" New password">
-                <br>
                 <br>
                 <button class="updateBTN" id="updateBtn">Update info</button>
+                <br>
+                <p class="text" id="psw">Create new password</p>
+                <input type="text" id="inpPSW" placeholder=" New password">
+                <br>
+                <button class="updateBTN" id="updatePSW">Change password</button>
                 <button class="deletuser" id="deleteUser">Delete useraccount</button>
-
             </div>
         </div>
+    </div>
 </body>
 
 <script>
-
-    let inpUsername = document.getElementById('inpUsername');
-    let inpEmail = document.getElementById('inpEmail');
-    let inpNewPassword = document.getElementById('inpNew');
-
-    let username2 = document.getElementById('username2');
-    let psw = document.getElementById('psw');
-    let email = document.getElementById('email');
-    let updateBtn = document.getElementById('updateBtn');
-
-    let deletUSER = document.getElementById("deleteUser");
-
-    let modal = document.getElementById("myModal");
-    modal.style.display = "none";
-    let modalBtn = document.getElementById("editProfileBtn");
-
-    let span = document.getElementsByClassName("close")[0];
-
-    modalBtn.onclick = function () {
-        modal.style.display = "block";
-        loadUser();
-    };
-
-    span.onclick = function () {
-        modal.style.display = "none";
-    };
-
     let createBtn = document.getElementById("createBtn");
     let titleInp = document.getElementById("titleInput");
-
-
     let logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener('click', function (evt) {
         sessionStorage.clear();
         window.location.href = "index.html";
     });
 
+    let inpUsername = document.getElementById('inpUsername');
+    let inpEmail = document.getElementById('inpEmail');
+    let errorMsg = document.getElementById("errorMsg");
+    let inpPSW = document.getElementById('inpPSW');
     let container = document.getElementById("container");
+
+    let userData = JSON.parse(sessionStorage.getItem("auth"));
+    sessionStorage.setItem("username", JSON.stringify(userData.username));
+    sessionStorage.setItem("email", JSON.stringify(userData.email));
+
+    let username2 = document.getElementById('username2');
+    let psw = document.getElementById('psw');
+    let email = document.getElementById('email');
+    let updateBtn = document.getElementById('updateBtn');
+    let updatePSW = document.getElementById('updatePSW');
+
+    let deleteUSER = document.getElementById("deleteUser");
+
+    let modal = document.getElementById("myModal");
+    modal.style.display = "none";
+    let modalBtn = document.getElementById("editProfileBtn");
+    modalBtn.onclick = function () {
+        modal.style.display = "block";
+        loadUser();
+    };
+
+    let span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
 
     let url;
     if (window.location.hostname == "localhost") {
-        url = "https://localhost:3000" + "/lists";
+        url = "http://localhost:3000" + "/lists";
     } else {
         url = window.location.hostname + "/lists";
     };
-
-    let userData = JSON.parse(sessionStorage.getItem("auth"));
-    let username = document.getElementById("username");
-    username.innerHTML = "Logged in as: " + userData.username;
-
-    createBtn.addEventListener('click', async function (evt) {
-
-        if (titleInp.value) {
-
-            titleInp.classList = "input";
-
-            let url;
-            if (window.location.hostname == "localhost") {
-                url = "https://localhost:3000" + "/lists";
-            } else {
-                url = window.location.hostname + "/lists";
-            };
-
-            let auth = JSON.parse(sessionStorage.getItem('auth'));
-            let token = auth.token;
-
-            let updata = {
-                title: titleInp.value,
-                public: false,
-                userid: auth.userid
-            }
-
-            let cfg = {
-                method: "POST",
-                headers: {
-                    "authorization": token,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(updata)
-            }
-
-            try {
-                var resp = await fetch(url, cfg);
-                var data = await resp.json();
-                titleInp.value = "";
-
-                if (resp.status > 202) {
-                    throw (data);
-                };
-
-                loadList();
-            }
-            catch (err) {
-            }
-        } else {
-
-            titleInp.classList.add("noInp");
-
-        }
-    });
 
     loadList();
 
@@ -171,7 +117,7 @@
 
             if (resp.status > 202) {
                 throw (data);
-            }
+            };
 
             container.innerHTML = "";
 
@@ -223,14 +169,61 @@
 
                 container.appendChild(listDiv);
                 container.appendChild(br);
-
             }
-
         }
         catch (err) {
             console.log(err);
         }
     };
+
+    createBtn.addEventListener('click', async function (evt) {
+
+        if (titleInp.value) {
+
+            titleInp.classList = "input";
+
+            let url;
+            if (window.location.hostname == "localhost") {
+                url = "http://localhost:3000" + "/lists";
+            } else {
+                url = window.location.hostname + "/lists";
+            };
+
+            let auth = JSON.parse(sessionStorage.getItem('auth'));
+            let token = auth.token;
+
+            let updata = {
+                title: titleInp.value,
+                public: false,
+                userid: auth.userid
+            }
+
+            let cfg = {
+                method: "POST",
+                headers: {
+                    "authorization": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updata)
+            }
+
+            try {
+                var resp = await fetch(url, cfg);
+                var data = await resp.json();
+                titleInp.value = "";
+
+                if (resp.status > 202) {
+                    throw (data);
+                };
+                loadList();
+            }
+            catch (err) {
+            }
+        } else {
+            titleInp.classList.add("noInp");
+        }
+    });
+
 
     async function deleteList(id) {
 
@@ -253,13 +246,12 @@
             if (resp.status > 202) {
                 throw (data);
             };
-
             loadList();
         }
         catch (err) {
             console.log(err);
         }
-    }
+    };
 
     async function publicTagging(state, id) {
 
@@ -301,49 +293,55 @@
         }
     }
 
-    // ---- edit user profile code -------------------
 
-    async function loadUser() {
+    function loadUser() {
 
-        let url;
-        if (window.location.hostname == "localhost") {
-            url = "https://localhost:3000" + "/profile";
-        } else {
-            url = window.location.hostname + "/profile";
-        };
+        let userNAME = JSON.parse(sessionStorage.getItem("username"));
+        let userEMAIL = JSON.parse(sessionStorage.getItem("email"));
 
-        try {
-            let auth = JSON.parse(sessionStorage.getItem('auth'));
-            let token = auth.token;
-
-            let cfg = {
-                method: "GET",
-                headers: { "authorization": token }
-            };
-
-            var resp = await fetch(url, cfg);
-            var data = await resp.json();
-
-            if (resp.status > 202) {
-                throw (data);
-            };
-
-            username2.innerText = "Username: " + data[0].username;
-            email.innerText = "Email: " + data[0].email;
-        }
-
-        catch (err) {
-            console.log(err);
-        }
+        username2.innerText = "Username: " + userNAME;
+        email.innerText = "Email: " + userEMAIL;
+    
     };
 
     updateBtn.addEventListener('click', async function (evt) {
 
-        // HER MÅ DET SJEKKES OM ALLE FELTENE ER FYLLT INN, HVIS IKKE SKRIV UT ERRORMELDING OG IKKE SEND DATA
+        let updataUsername;
+        let updataEmail;
+        let userNameUpdate = JSON.parse(sessionStorage.getItem("username"));
+        let userEmailUpdate = JSON.parse(sessionStorage.getItem("email"));
+
+        if (inpUsername.value) {
+            updataUsername = inpUsername.value;
+            sessionStorage.setItem("username", JSON.stringify(inpUsername.value));
+        } else {
+            updataUsername = userNameUpdate;
+        };
+
+        if (inpEmail.value) {
+
+            let regX = /^[^\s]+@[^\s]+\.[a-zA-Z]{2,5}$/;
+            let match = regX.test(inpEmail.value);
+
+            if (match == true) {
+                updataEmail = inpEmail.value;
+                sessionStorage.setItem("email", JSON.stringify(inpEmail.value));
+                errorMsg.innerText = "";
+
+            } else {
+                updataEmail = userData.email;
+                errorMsg.innerText = "Not a valid email, email not updated";
+                errorMsg.classList.add("error");
+            }
+
+        } else {
+            updataEmail = userEmailUpdate;
+            errorMsg.innerText = "";
+        };
 
         let url;
         if (window.location.hostname == "localhost") {
-            url = "https://localhost:3000" + "/profile";
+            url = "http://localhost:3000" + "/profile";
         } else {
             url = window.location.hostname + "/profile";
         };
@@ -352,9 +350,8 @@
         let token = auth.token;
 
         let updata = {
-            username: inpUsername.value,
-            password: inpNewPassword.value,
-            email: inpEmail.value
+            username: updataUsername,
+            email: updataEmail
         }
 
         let cfg = {
@@ -375,7 +372,48 @@
             };
 
             loadUser();
+            inpUsername.value = "";
+            inpEmail.value = "";
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
 
+    updatePSW.addEventListener('click', async function (evt) {
+
+        let url;
+        if (window.location.hostname == "localhost") {
+            url = "http://localhost:3000" + "/profile/psw";
+        } else {
+            url = window.location.hostname + "/profile/psw";
+        };
+
+        let auth = JSON.parse(sessionStorage.getItem('auth'));
+        let token = auth.token;
+
+        let updata = {
+            password: inpPSW.value,
+        }
+
+        let cfg = {
+            method: "PUT",
+            headers: {
+                "authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updata)
+        }
+
+        try {
+            var resp = await fetch(url, cfg);
+            var data = await resp.json();
+
+            if (resp.status > 202) {
+                throw (data);
+            };
+
+            inpPSW.value = "";
         }
         catch (err) {
             console.log(err);
@@ -383,13 +421,13 @@
 
     });
 
-    deletUSER.addEventListener('click', async function (evt) {
+    deleteUSER.addEventListener('click', async function (evt) {
 
         if (confirm('Are you sure you want to delete user?')) {
 
             let url;
             if (window.location.hostname == "localhost") {
-                url = "https://localhost:3000" + "/profile";
+                url = "http://localhost:3000" + "/profile";
             } else {
                 url = window.location.hostname + "/profile";
             };
