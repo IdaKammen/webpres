@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <link rel="stylesheet" type="text/css" href="css/edit.css" />
     <title>Editmode</title>
@@ -55,28 +56,31 @@
     let inpDate = document.getElementById("inpDate");
     let backBtn = document.getElementById("backBtn");
 
-    let modal = document.getElementById("myModal");
-    modal.style.display = "none";
-
-    let inpItem2 = document.getElementById('inpItem2');
-    let inpDesc2 = document.getElementById('inpDesc2');
-    let inpDate2 = document.getElementById('inpDate2');
-
-    let item = document.getElementById('item');
-    let desc = document.getElementById('desc');
-    let newDate = document.getElementById('date');
-
-    let updateBtn = document.getElementById('updateBtn');
-
     let addBtn = document.getElementById("addBtn");
     let container = document.getElementById("container");
     let listID = sessionStorage.getItem('listId');
     let listTitle = sessionStorage.getItem('listTitle');
     title.innerText = listTitle;
 
+    let inpItem2 = document.getElementById('inpItem2');
+    let inpDesc2 = document.getElementById('inpDesc2');
+    let inpDate2 = document.getElementById('inpDate2');
+    let item = document.getElementById('item');
+    let desc = document.getElementById('desc');
+    let newDate = document.getElementById('date');
+
+    let updateBtn = document.getElementById('updateBtn');
+
+    let modal = document.getElementById("myModal");
+    modal.style.display = "none";
+
     let span = document.getElementsByClassName("close")[0];
     span.onclick = function () {
+        inpItem2.value = "";
+        inpDesc2.value = "";
+        inpDate2.value = "";
         modal.style.display = "none";
+        loadList();
     }
 
     backBtn.addEventListener('click', function (evt) {
@@ -86,7 +90,7 @@
     let url;
 
     if (window.location.hostname == "localhost") {
-        url = "https://localhost:3000" + "/editor";
+        url = "http://localhost:3000" + "/editor";
     } else {
         url = window.location.hostname + "/editor";
     };
@@ -98,7 +102,7 @@
             titleInp.classList = "input";
 
             if (window.location.hostname == "localhost") {
-                url = "https://localhost:3000" + "/editor/title";
+                url = "http://localhost:3000" + "/editor/title";
             } else {
                 url = window.location.hostname + "/editor/title";
             };
@@ -203,7 +207,6 @@
 
                 let br = document.createElement("br");
 
-
                 let deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Delete";
                 deleteBtn.classList.add("listBtn");
@@ -229,11 +232,9 @@
                 listDiv.appendChild(date);
 
                 container.appendChild(listDiv);
-
             }
         }
         catch (err) {
-            console.log(err);
         }
     };
 
@@ -248,7 +249,7 @@
             let url;
 
             if (window.location.hostname == "localhost") {
-                url = "https://localhost:3000" + "/editor";
+                url = "http://localhost:3000" + "/editor";
             } else {
                 url = window.location.hostname + "/editor";
             };
@@ -287,12 +288,9 @@
                 console.log(err);
             }
         } else {
-
             inpItem.classList.add("noInp");
             inpDate.classList.add("noInp");
-
         };
-
         loadList();
     });
 
@@ -328,7 +326,6 @@
             if (resp.status > 202) {
                 throw (data);
             };
-
             loadList();
         }
         catch (err) {
@@ -339,7 +336,6 @@
     async function deleteItem(id) {
 
         let updata = { itemID: id };
-
         let auth = JSON.parse(sessionStorage.getItem("auth"));
         let token = auth.token;
 
@@ -358,7 +354,6 @@
             if (resp.status > 202) {
                 throw (data);
             };
-
             loadList();
         }
         catch (err) {
@@ -366,13 +361,14 @@
         }
     };
 
-    // ---- code for modal ---------------------------
+
 
     async function loadData() {
 
         let url;
+
         if (window.location.hostname == "localhost") {
-            url = "https://localhost:3000" + "/edititem";
+            url = "http://localhost:3000" + "/edititem";
         } else {
             url = window.location.hostname + "/edititem";
         };
@@ -407,7 +403,6 @@
             updateBtn.addEventListener('click', async function (evt) {
                 editItem(task, descr, longDate);
             });
-
         }
         catch (err) {
             console.log(err);
@@ -420,7 +415,7 @@
 
         let url;
         if (window.location.hostname == "localhost") {
-            url = "https://localhost:3000" + "/edititem";
+            url = "http://localhost:3000" + "/edititem";
         } else {
             url = window.location.hostname + "/edititem";
         };
@@ -474,7 +469,6 @@
             if (resp.status > 202) {
                 throw (data);
             };
-
             loadData();
         }
         catch (err) {
