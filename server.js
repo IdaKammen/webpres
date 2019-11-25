@@ -15,7 +15,8 @@ try {
     console.log("not running localy so no secrets to share");
 };
 
-let secret =  process.env.SESSION_SECRET;
+//let secret =  process.env.SESSION_SECRET;
+let secret = "GlederMegTilJul!";
 
 
 const conString = process.env.DATABASE_URL || secretStash.dbURI;
