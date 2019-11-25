@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
-let secret =  process.env.SESSION_SECRET;
+//let secret =  process.env.SESSION_SECRET;
+
+let secret = "GlederMegTilJul!";
 
 let authObj = {};
 
