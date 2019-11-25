@@ -58,8 +58,8 @@
     let publicBtn = document.getElementById("publicBtn");
     publicBtn.addEventListener('click', function (evt) {
         window.location.href = "public.html";
-    }); 
-    
+    });
+
     let inpUserame2 = document.getElementById('inpUsername2');
     let inpEmail = document.getElementById('inpEmail');
     let inpPassword2 = document.getElementById('inpPwrd2');
@@ -85,7 +85,7 @@
             url = "http://localhost:3000";
         } else {
             url = "https://webpres.herokuapp.com";
-        };    
+        };
 
         let updata = {
             username: inpUsername.value,
@@ -102,13 +102,10 @@
             let resp = await fetch(url, cfg);
             let data = await resp.json();
 
-            if (resp.status === 404) {
-                inpUsername.classList.add("noInp");
-            } else if (resp.status === 401) {
-                inpPwrd.classList.add("noInp");
-            } else if (resp.status > 202) {
-                throw (data);
+            if (resp.status > 202) {
+                throw(data);
             };
+            
             sessionStorage.setItem("auth", JSON.stringify(data));
             location.href = "user.html";
         }
