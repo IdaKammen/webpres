@@ -8,17 +8,17 @@ const authObj = require('./modules/auth')
 
 const app = express();
 
-/*let secretStash;
+let secretStash;
 try {
     secretStash = require("./modules/secrets");
 } catch (error) {
     console.log("not running localy so no secrets to share");
-};*/
+};
 
-let dbURI = "postgres://nwzjyqympfxqpv:db64364662d38a5811c438757136f15e8039b264998dcf34d400f4711acad962@ec2-54-217-228-25.eu-west-1.compute.amazonaws.com:5432/dascnumjjf9evv" + "?ssl=true";
-let secret =  "glederMegtilJul!";
+let secret =  process.env.SESSION_SECRET;
 
-const conString = process.env.DATABASE_URL || dbURI;
+
+const conString = process.env.DATABASE_URL || secretStash.dbURI;
 const pool = new pg.Pool({ connectionString: conString });
 
 app.use(cors());
